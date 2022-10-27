@@ -719,7 +719,7 @@ class NovalnetAssistant extends WizardProvider
                     'defaultValue'  => [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
                     'options'       => [
                                         'name' => 'NovalnetAssistant.novalnetInstalmentCycleLabel',
-                                '       checkboxValues' => $this->getInstalmentCycles()
+                                        'checkboxValues' => $this->getInstalmentCycles()
                                        ]
                 ],
                 $nnInstalmentPayment . 'allowB2bCustomer' =>
