@@ -18,7 +18,7 @@ use Novalnet\Services\SettingsService;
 use Plenty\Modules\Frontend\Session\Storage\Contracts\FrontendSessionStorageFactoryContract;
 use Plenty\Modules\Basket\Contracts\BasketRepositoryContract;
 use Plenty\Plugin\Templates\Twig;
-
+use Plenty\Plugin\Log\Loggable;
 /**
  * Class PaymentController
  *
@@ -26,6 +26,7 @@ use Plenty\Plugin\Templates\Twig;
  */
 class PaymentController extends Controller
 { 
+    use Loggable;
     /**
      * @var Request
      */
@@ -166,12 +167,19 @@ class PaymentController extends Controller
     {
         // Get the payment form post data
         $paymentRequestPostData = $this->request->all();
+        $this->getLogger(__METHOD__)->error('Post data', $paymentRequestPostData);
         // Get the order amount
         $orderAmount = !empty($paymentRequestPostData['nn_order_amount']) ? $paymentRequestPostData['nn_order_amount'] : 0;
         // Get the payment request params
         $paymentRequestData = $this->paymentService->generatePaymentParams($this->basketRepository->load(), $paymentRequestPostData['nn_payment_key'], $orderAmount);
+        // 
+        
         // Setting up the account data to the server for SEPA processing
-        if(in_array($paymentRequestPostData['nn_payment_key'], ['NOVALNET_SEPA', 'NOVALNET_GUARANTEED_SEPA'])) {
+        if(in_array($paymentRequestPostData['nn_payment_key'], ['NOVALNET_SEPA', 'NOVALNET_GUARANTEED_SEPA', 'NOVALNET_INSTALMENT_SEPA'])) {
+            // If the customer has wish to save the account data for future purchases, we notify the server
+            if (!empty($paymentRequestPostData['nn_save_payment_data'])) {
+                $paymentRequestData['paymentRequestData']['transaction']['create_token'] = 1;
+            }
             $paymentRequestData['paymentRequestData']['transaction']['payment_data'] = ['iban'  => $paymentRequestPostData['nn_sepa_iban']];
             if(!empty($paymentRequestPostData['nn_sepa_bic'])) {
                 $paymentRequestData['paymentRequestData']['transaction']['payment_data']['bic'] = $paymentRequestPostData['nn_sepa_bic'];
