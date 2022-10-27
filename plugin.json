@@ -34,7 +34,7 @@
     "runOnBuild": [
         "Novalnet\\Migrations\\CreateNovalnetPaymentMethods1210",
         "Novalnet\\Migrations\\CreateTransactionTable",
-        "Novalnet\\Migrations\\UpdateTransactionTable1210",
+        "Novalnet\\Migrations\\UpdateTransactionTable12100",
         "Novalnet\\Migrations\\CreateSettingsTable"
     ],
     "dataProviders": [
