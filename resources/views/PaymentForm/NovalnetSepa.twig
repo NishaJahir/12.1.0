@@ -23,14 +23,19 @@
             <input type="hidden" id="nn_order_amount" name="nn_order_amount" value="{{orderAmount}}">
         {% endif %}
         <div class="row">
+            {# Display one click shopping checkbox #}
+            {% if showOneClickShopping == true %}
+               <div class="col-12 nn_save_payment">
+                    <input type="checkbox" name="nn_save_payment_data" id="nn_save_payment_data" checked>                    
+                    <strong>{{trans("Novalnet::Customize.template_save_account_data")}}</strong>
+               </div>
+            {% endif %}
             <div class="col-12">
                 <div class="input-unit">
                     <input type="text" name="nn_sepa_iban" id="nn_sepa_iban" placeholder="DE00 0000 0000 0000 0000 00" style="text-transform:uppercase;" onkeypress="return NovalnetUtility.checkIban(event, 'nn_sepa_bic');" onkeyup="return NovalnetUtility.formatIban(event, 'nn_sepa_bic');" onchange="return NovalnetUtility.formatIban(event, 'nn_sepa_bic');" required>
                     <label for="nn_sepa_iban">{{trans("Novalnet::Customize.template_sepa_iban_label")}}*</label>
                 </div>
             </div>
-        </div>
-        <div class="row">
             <div class="col-12">
                 <div class="input-unit">
                     <input type="text" name="nn_sepa_bic" id="nn_sepa_bic" placeholder="XXXX XX XX XXX" style="text-transform:uppercase;display:none;" onkeypress="return NovalnetUtility.formatBic(event);" onchange="return NovalnetUtility.formatBic(event);">
