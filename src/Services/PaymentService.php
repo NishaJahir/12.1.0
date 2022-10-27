@@ -459,6 +459,8 @@ class PaymentService
         $privateKey = $this->settingsService->getPaymentSettingsValue('novalnet_private_key');
         $paymentResponseData = $this->paymentHelper->executeCurl($paymentRequestData['paymentRequestData'], $paymentRequestData['paymentUrl'], $privateKey);
         $isPaymentSuccess = isset($paymentResponseData['result']['status']) && $paymentResponseData['result']['status'] == 'SUCCESS';
+        $this->getLogger(__METHOD__)->error('req', $paymentRequestData);
+        $this->getLogger(__METHOD__)->error('res', $paymentResponseData);
         // Do redirect if the redirect URL is present
         if($isPaymentSuccess && ($this->isRedirectPayment($paymentKey) || !empty($nnDoRedirect) || !empty($nnGooglePayDoRedirect))) {
             // Set the payment response in the session for the further processings
@@ -615,6 +617,8 @@ class PaymentService
             'tid'              => !empty($parentTid) ? $parentTid : (!empty($paymentResponseData['transaction']['tid']) ? $paymentResponseData['transaction']['tid'] : $paymentResponseData['tid']),
             'ref_tid'          => $paymentResponseData['transaction']['refund']['tid'] ?? (!empty($paymentResponseData['transaction']['tid']) ? $paymentResponseData['transaction']['tid'] : $paymentResponseData['tid']),
             'payment_name'     => $paymentResponseData['payment_method'],
+            'saveOneTimeToken' => !empty($paymentResponseData['transaction']['payment_data']['token']) ? 1 : 0,
+            'tokenInfo'        => !empty($paymentResponseData['transaction']['payment_data']) ? json_encode($paymentResponseData['transaction']['payment_data']) : '',
             'additional_info'  => $additionalInfo ?? 0,
         ];
         if(in_array($transactionData['payment_name'], ['NOVALNET_INVOICE', 'NOVALNET_PREPAYMENT', 'NOVALNET_MULTIBANCO']) ||  (in_array($transactionData['payment_name'], ['NOVALNET_PAYPAL', 'NOALNET_PRZELEWY24']) && in_array($paymentResponseData['transaction']['status'], ['PENDING', 'ON_HOLD'])) || $paymentResponseData['result']['status'] != 'SUCCESS') {
