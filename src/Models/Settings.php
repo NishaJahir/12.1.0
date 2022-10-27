@@ -78,6 +78,8 @@ class Settings extends Model
             'novalnet_cashpayment'          => $data['novalnet_cashpayment'],
             'novalnet_przelewy24'           => $data['novalnet_przelewy24'],
             'novalnet_eps'                  => $data['novalnet_eps'],
+            'novalnet_instalment_invoice'   => $data['novalnet_instalment_invoice'],
+            'novalnet_instalment_sepa'      => $data['novalnet_instalment_sepa'],
             'novalnet_paypal'               => $data['novalnet_paypal'],
             'novalnet_postfinance_card'     => $data['novalnet_postfinance_card'],
             'novalnet_postfinance_efinance' => $data['novalnet_postfinance_efinance'],
@@ -161,6 +163,12 @@ class Settings extends Model
         if(isset($data['novalnet_eps'])) {
             $this->value['novalnet_eps'] = $data['novalnet_eps'];
         }
+        if(isset($data['novalnet_instalment_invoice'])) {
+            $this->value['novalnet_instalment_invoice'] = $data['novalnet_instalment_invoice'];
+        }
+        if(isset($data['novalnet_instalment_sepa'])) {
+            $this->value['novalnet_instalment_sepa'] = $data['novalnet_instalment_sepa'];
+        }
         if(isset($data['novalnet_paypal'])) {
             $this->value['novalnet_paypal'] = $data['novalnet_paypal'];
         }
@@ -206,7 +214,7 @@ class Settings extends Model
         $this->updatedAt = (string)Carbon::now();
         $paymentService = pluginApp(PaymentService::class);
         // Update the Novalnet API version 
-        $paymentService->updateApiVersion($this->value);
+        //$paymentService->updateApiVersion($this->value);
         // Log the configuration updated time for the reference
         $this->getLogger(__METHOD__)->error('Updated Novalnet settings details ' . $this->updatedAt, $this);
         return $database->save($this);
