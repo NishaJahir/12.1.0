@@ -37,6 +37,8 @@ class TransactionLog extends Model
     public $transactionDatetime;
     public $tid;
     public $paymentName;
+    public $saveOneTimeToken;
+    public $tokenInfo;
     public $additionalInfo;
 
     /**
