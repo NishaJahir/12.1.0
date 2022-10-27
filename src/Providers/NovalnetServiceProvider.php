@@ -146,19 +146,23 @@ class NovalnetServiceProvider extends ServiceProvider
                 } else {
                     // Check if the birthday field needs to show for guaranteed payments
                     $showBirthday = ((!isset($paymentRequestData['paymentRequestData']['customer']['billing']['company']) && !isset($paymentRequestData['paymentRequestData']['customer']['birth_date'])) ||  (isset($paymentRequestData['paymentRequestData']['customer']['birth_date']) && time() < strtotime('+18 years', strtotime($paymentRequestData['paymentRequestData']['customer']['birth_date'])))) ? true : false;
+                    // Check if one click shopping enabled
+                    $oneClickShopping = $settingsService->getPaymentSettingsValue('one_click_shopping', strtolower($paymentKey));
+                    $showOneClickShopping = (!empty($oneClickShopping) && $paymentRequestData['customer']['customer_no'] != 'guest') ? true : false;
                     // Handle the Direct, Redirect and Form payments content type
                     if(in_array($paymentKey, ['NOVALNET_INVOICE', 'NOVALNET_PREPAYMENT', 'NOVALNET_CASHPAYMENT', 'NOVALNET_MULTIBANCO'])
                     || $paymentService->isRedirectPayment($paymentKey)
                     || ($paymentKey == 'NOVALNET_GUARANTEED_INVOICE' && $showBirthday == false)) {
                         $content = '';
                         $contentType = 'continue';
-                    } elseif(in_array($paymentKey, ['NOVALNET_SEPA', 'NOVALNET_GUARANTEED_SEPA'])) {
+                    } elseif(in_array($paymentKey, ['NOVALNET_SEPA', 'NOVALNET_GUARANTEED_SEPA', 'NOVALNET_INSTALMENT_SEPA'])) {
                         $content = $twig->render('Novalnet::PaymentForm.NovalnetSepa',
                         [
                             'nnPaymentProcessUrl'   => $paymentService->getProcessPaymentUrl(),
                             'paymentMopKey'         =>  $paymentKey,
                             'paymentName'           => $paymentHelper->getCustomizedTranslatedText('template_' . strtolower($paymentKey)),
-                            'showBirthday'          => $showBirthday
+                            'showBirthday'          => $showBirthday,
+                            'showOneClickShopping'  => $showOneClickShopping
                         ]);
                         $contentType = 'htmlContent';
                     } elseif($paymentKey == 'NOVALNET_GUARANTEED_INVOICE' && $showBirthday == true) {
