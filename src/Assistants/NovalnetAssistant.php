@@ -742,10 +742,11 @@ class NovalnetAssistant extends WizardProvider
     public function getInstalmentCycles()
     {
         $instalmentCyclePeriods = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 18, 21, 24];
+        $cycleText = 'NovalnetAssistant.novalnetCycleLabel';
         $instalmentCycles = [];
         foreach($instalmentCyclePeriods as $instalmentCyclePeriodIndex => $instalmentCyclePeriod) {
                 $instalmentCycles[] = [
-                'caption' => $instalmentCyclePeriod . 'NovalnetAssistant.novalnetCycleLabel',
+                'caption' => $instalmentCyclePeriod .' '. $cycleText,
                 'value' => $instalmentCyclePeriod
                 ];
         }
