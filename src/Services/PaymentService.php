@@ -612,15 +612,15 @@ class PaymentService
             $orderTotalAmount = $refundOrderTotalAmount ?? $creditOrderTotalAmount;
         }
         $transactionData = [
-            'order_no'         => $paymentResponseData['transaction']['order_no'],
-            'amount'           => !empty($orderTotalAmount) ? $orderTotalAmount : $paymentResponseData['transaction']['amount'],
-            'callback_amount'  => $paymentResponseData['transaction']['refund']['amount'] ?? $paymentResponseData['transaction']['amount'],
-            'tid'              => !empty($parentTid) ? $parentTid : (!empty($paymentResponseData['transaction']['tid']) ? $paymentResponseData['transaction']['tid'] : $paymentResponseData['tid']),
-            'ref_tid'          => $paymentResponseData['transaction']['refund']['tid'] ?? (!empty($paymentResponseData['transaction']['tid']) ? $paymentResponseData['transaction']['tid'] : $paymentResponseData['tid']),
-            'payment_name'     => $paymentResponseData['payment_method'],
-            'saveOneTimeToken' => !empty($paymentResponseData['transaction']['payment_data']['token']) ? 1 : 0,
-            'tokenInfo'        => !empty($paymentResponseData['transaction']['payment_data']) ? json_encode($paymentResponseData['transaction']['payment_data']) : '',
-            'additional_info'  => $additionalInfo ?? 0,
+            'order_no'           => $paymentResponseData['transaction']['order_no'],
+            'amount'             => !empty($orderTotalAmount) ? $orderTotalAmount : $paymentResponseData['transaction']['amount'],
+            'callback_amount'    => $paymentResponseData['transaction']['refund']['amount'] ?? $paymentResponseData['transaction']['amount'],
+            'tid'                => !empty($parentTid) ? $parentTid : (!empty($paymentResponseData['transaction']['tid']) ? $paymentResponseData['transaction']['tid'] : $paymentResponseData['tid']),
+            'ref_tid'            => $paymentResponseData['transaction']['refund']['tid'] ?? (!empty($paymentResponseData['transaction']['tid']) ? $paymentResponseData['transaction']['tid'] : $paymentResponseData['tid']),
+            'payment_name'       => $paymentResponseData['payment_method'],
+            'save_onetime_token' => !empty($paymentResponseData['transaction']['payment_data']['token']) ? 1 : 0,
+            'token_info'         => !empty($paymentResponseData['transaction']['payment_data']) ? json_encode($paymentResponseData['transaction']['payment_data']) : '',
+            'additional_info'    => $additionalInfo ?? 0,
         ];
         if(in_array($transactionData['payment_name'], ['NOVALNET_INVOICE', 'NOVALNET_PREPAYMENT', 'NOVALNET_MULTIBANCO']) ||  (in_array($transactionData['payment_name'], ['NOVALNET_PAYPAL', 'NOALNET_PRZELEWY24']) && in_array($paymentResponseData['transaction']['status'], ['PENDING', 'ON_HOLD'])) || $paymentResponseData['result']['status'] != 'SUCCESS') {
             $transactionData['callback_amount'] = 0;
