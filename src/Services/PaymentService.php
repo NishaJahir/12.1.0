@@ -276,6 +276,7 @@ class PaymentService
         // Unset the shipping details if the billing and shipping details are same
         if(!empty($paymentRequestData['customer']['shipping']['same_as_billing'])) {
             unset($paymentRequestData['customer']['shipping']);
+            $paymentRequestData['customer']['shipping']['same_as_billing'] = '1';
         }
         // Building the transaction Data
         $paymentRequestData['transaction'] = [
