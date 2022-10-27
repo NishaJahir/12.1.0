@@ -58,33 +58,51 @@ class NovalnetAssistantSettingsHandler implements WizardSettingsHandler
                     $novalnetSettings[$paymentMethodKey]['inline_form']          = $data[$paymentKey . 'InlineForm'] ?? '';
                     $novalnetSettings[$paymentMethodKey]['payment_action']       = $data[$paymentKey . 'PaymentAction'] ?? '';
                     $novalnetSettings[$paymentMethodKey]['onhold_amount']        = $data[$paymentKey . 'OnHold'] ?? '';
+                    $novalnetSettings[$paymentMethodKey]['one_click_shopping']   = $data[$paymentKey . 'OneClickShopping'] ?? 0;
                     $novalnetSettings[$paymentMethodKey]['standard_style_label'] = $data[$paymentKey . 'StandardStyleLabel'] ?? '';
                     $novalnetSettings[$paymentMethodKey]['standard_style_field'] = $data[$paymentKey . 'StandardStyleField'] ?? '';
                     $novalnetSettings[$paymentMethodKey]['standard_style_css']   = $data[$paymentKey . 'StandardStyleCss'] ?? '';
                     break;
                 case 'novalnet_invoice':
+                    $novalnetSettings[$paymentMethodKey]['due_date']             = $data[$paymentKey . 'Duedate'] ?? '';
+                    $novalnetSettings[$paymentMethodKey]['payment_action']       = $data[$paymentKey . 'PaymentAction'] ?? '';
+                    $novalnetSettings[$paymentMethodKey]['onhold_amount']        = $data[$paymentKey . 'OnHold'] ?? '';
+                    break;
                 case 'novalnet_sepa':
                     $novalnetSettings[$paymentMethodKey]['due_date']             = $data[$paymentKey . 'Duedate'] ?? '';
                     $novalnetSettings[$paymentMethodKey]['payment_action']       = $data[$paymentKey . 'PaymentAction'] ?? '';
                     $novalnetSettings[$paymentMethodKey]['onhold_amount']        = $data[$paymentKey . 'OnHold'] ?? '';
+                    $novalnetSettings[$paymentMethodKey]['one_click_shopping']   = $data[$paymentKey . 'OneClickShopping'] ?? 0;
                     break;
                 case 'novalnet_prepayment':
                 case 'novalnet_cashpayment':
                     $novalnetSettings[$paymentMethodKey]['due_date']             = $data[$paymentKey . 'Duedate'] ?? '';
                     break;
                 case 'novalnet_guaranteed_invoice':
-                case 'novalnet_guaranteed_sepa':
                     $novalnetSettings[$paymentMethodKey]['force']                = $data[$paymentKey . 'force'] ?? '';
                     $novalnetSettings[$paymentMethodKey]['allow_b2b_customer']   = $data[$paymentKey . 'allowB2bCustomer'] ?? '';
                     $novalnetSettings[$paymentMethodKey]['payment_action']       = $data[$paymentKey . 'PaymentAction'] ?? '';
                     $novalnetSettings[$paymentMethodKey]['onhold_amount']        = $data[$paymentKey . 'OnHold'] ?? '';
                     break;
+                case 'novalnet_guaranteed_sepa':
+                    $novalnetSettings[$paymentMethodKey]['force']                = $data[$paymentKey . 'force'] ?? '';
+                    $novalnetSettings[$paymentMethodKey]['allow_b2b_customer']   = $data[$paymentKey . 'allowB2bCustomer'] ?? '';
+                    $novalnetSettings[$paymentMethodKey]['payment_action']       = $data[$paymentKey . 'PaymentAction'] ?? '';
+                    $novalnetSettings[$paymentMethodKey]['onhold_amount']        = $data[$paymentKey . 'OnHold'] ?? '';
+                    $novalnetSettings[$paymentMethodKey]['one_click_shopping']   = $data[$paymentKey . 'OneClickShopping'] ?? 0;
+                    break;
                 case 'novalnet_instalment_invoice':
+                    $novalnetSettings[$paymentMethodKey]['cycle']                = $data[$paymentKey . 'cycle'] ?? '';
+                    $novalnetSettings[$paymentMethodKey]['allow_b2b_customer']   = $data[$paymentKey . 'allowB2bCustomer'] ?? '';
+                    $novalnetSettings[$paymentMethodKey]['payment_action']       = $data[$paymentKey . 'PaymentAction'] ?? '';
+                    $novalnetSettings[$paymentMethodKey]['onhold_amount']        = $data[$paymentKey . 'OnHold'] ?? '';
+                    break;
                 case 'novalnet_instalment_sepa':
                     $novalnetSettings[$paymentMethodKey]['cycle']                = $data[$paymentKey . 'cycle'] ?? '';
                     $novalnetSettings[$paymentMethodKey]['allow_b2b_customer']   = $data[$paymentKey . 'allowB2bCustomer'] ?? '';
                     $novalnetSettings[$paymentMethodKey]['payment_action']       = $data[$paymentKey . 'PaymentAction'] ?? '';
                     $novalnetSettings[$paymentMethodKey]['onhold_amount']        = $data[$paymentKey . 'OnHold'] ?? '';
+                    $novalnetSettings[$paymentMethodKey]['one_click_shopping']   = $data[$paymentKey . 'OneClickShopping'] ?? 0;
                     break;
                 case 'novalnet_paypal':
                     $novalnetSettings[$paymentMethodKey]['payment_action']       = $data[$paymentKey . 'PaymentAction'] ?? '';
