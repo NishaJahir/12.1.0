@@ -334,7 +334,7 @@ class NovalnetAssistant extends WizardProvider
     */
     public function createSepaPaymentConfiguration($config)
     {
-        $sepaPayments = ['novalnetSepa', 'novalnetGuaranteedSepa'];
+        $sepaPayments = ['novalnetSepa', 'novalnetGuaranteedSepa', 'novalnetInstalmentSepa'];
         foreach($sepaPayments as $sepaPayment) {
             $config['steps'][$sepaPayment]['sections'][]['form'] =
             [
@@ -346,7 +346,15 @@ class NovalnetAssistant extends WizardProvider
                                   'tooltip' => 'NovalnetAssistant.novalnetSepaDueDateTooltip',
                       'pattern' => '^[1-9]\d*$'
                                  ]
+                ],
+                $sepaPayment . 'OneClickShopping' =>
+                [
+                    'type' => 'checkbox',
+                    'options' => [
+                                  'name'    => 'NovalnetAssistant.novalnetOneClickShoppingLabel'
+                                 ]
                 ]
+                
             ];
         }
         return $config;
@@ -376,6 +384,13 @@ class NovalnetAssistant extends WizardProvider
                 'options'   => [
                                 'name' => 'NovalnetAssistant.novalnetCcDisplayInlineFormLabel'
                                ]
+            ],
+            'novalnetCcOneClickShopping' =>
+            [
+                    'type' => 'checkbox',
+                    'options' => [
+                                  'name'    => 'NovalnetAssistant.novalnetOneClickShoppingLabel'
+                                 ]
             ],
             'novalnetCcStandardStyleLabel' =>
             [
