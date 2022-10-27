@@ -214,6 +214,8 @@ class PaymentHelper
                     NovalnetCashpaymentPaymentMethod::PAYMENT_KEY,
                     NovalnetPrzelewy24PaymentMethod::PAYMENT_KEY,
                     NovalnetEpsPaymentMethod::PAYMENT_KEY,
+                    NovalnetInstalmentInvoicePaymentMethod::PAYMENT_KEY,
+                    NovalnetInstalmentSepaPaymentMethod::PAYMENT_KEY,
                     NovalnetPaypalPaymentMethod::PAYMENT_KEY,
                     NovalnetPostfinanceCardPaymentMethod::PAYMENT_KEY,
                     NovalnetPostfinanceEfinancePaymentMethod::PAYMENT_KEY,
