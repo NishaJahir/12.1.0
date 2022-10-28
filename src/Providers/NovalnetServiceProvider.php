@@ -162,10 +162,11 @@ class NovalnetServiceProvider extends ServiceProvider
                         $savedPaymentDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%'.strtolower($paymentKey).'%')->where('saveOneTimeToken', '=', 1)->whereNull('tokenInfo', 'and', true)->orderBy('id', 'DESC')->limit(3)->get();
                         $savedPaymentDetails = json_decode(json_encode($savedPaymentDetails), true);
                         foreach($savedPaymentDetails as $savedPaymentDetailKey => $savedPaymentDetail) {
-                            $savedPaymentDetails[$savedPaymentDetailKey]['decodedSavedPaymentDetails'] = json_decode($savedPaymentDetail['tokenInfo']);
+                            $savedPaymentDetails[$savedPaymentDetailKey]['decodedSavedPaymentDetails'] = json_decode($savedPaymentDetail['tokenInfo'], true);
+                            $savedPaymentDetails[$savedPaymentDetailKey]['tokenInfo'] = json_decode($savedPaymentDetail['tokenInfo'], true);
                         }
                     }
-                     $this->getLogger(__METHOD__)->error('saved', $savedPaymentDetails);
+                     $this->getLogger(__METHOD__)->error('saved123', $savedPaymentDetails);
                     // Handle the Direct, Redirect and Form payments content type
                     if(in_array($paymentKey, ['NOVALNET_INVOICE', 'NOVALNET_PREPAYMENT', 'NOVALNET_CASHPAYMENT', 'NOVALNET_MULTIBANCO'])
                     || $paymentService->isRedirectPayment($paymentKey)
