@@ -22,7 +22,28 @@
             <input type="hidden" id="nn_reinitializePayment" name="nn_reinitializePayment" value="{{reinitializePayment}}">
             <input type="hidden" id="nn_order_amount" name="nn_order_amount" value="{{orderAmount}}">
         {% endif %}
-        <div class="row">
+        {# Display the saved account details #}
+        {% if savedPaymentDetails is not empty %}
+             {% for savedPaymentDetail in savedPaymentDetails %}
+             {% set tokenInfo = savedPaymentDetail.tokenInfo|json_decode(constant('JSON_OBJECT_AS_ARRAY'))  %}
+                  <div class="row" id="remove_{{tokenInfo.token}}">
+                    <div class="col-12 nn_masked_details">
+                        <input type="radio" name="nn_radio_option" value="{{tokenInfo.token}}">
+                        <span>
+                            <img src="{{plugin_path('Novalnet')}}/images/novalnet_sepa.png" alt="{{paymentMopKey|lower}}" title="{{paymentMopKey|lower}}"> {{tokenInfo.iban}}
+                        </span>
+                        <span class="input-group-btn"><button type="button" class="btn btn-medium btn-appearance" value="{{tokenInfo.token}}"><i aria-hidden="true" class="fa fa-gift"></i></button></span>
+                    </div>
+                  </div>
+             {% endfor %}
+             <div class="row nn_add_new_details">
+                <div class="col-12">
+                    <input type="hidden" name="nn_customer_selected_token" id="nn_customer_selected_token">          
+                    <input type="radio"  name="nn_radio_option" id="nn_toggle_form">{{trans("Novalnet::Customize.template_add_new_account_details")}}
+                </div>
+            </div>
+        {% endif %}
+        <div class="row" id="nn_new_account_details">
             {# Display one click shopping checkbox #}
             {% if showOneClickShopping == true %}
                <div class="col-12 nn_save_payment">
