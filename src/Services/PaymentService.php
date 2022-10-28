@@ -1196,4 +1196,28 @@ class PaymentService
         $this->getLogger(__METHOD__)->error('Novalnet::updateApiVersion failed', $paymentResponseData);
     }
    }
+    
+    /**
+     * Retrieving the reference details for one-click shopping
+     *
+     * @param  string $paymentKey
+     * 
+     * @return array|null
+     */
+    public function getPaymentReferenceValues($paymentKey, $customerNo)
+    {
+		// Get the saved payment details for the registered customers
+        if($customerNo != 'guest') {
+			$storedDetails = $database->query(TransactionLog::class)->where('paymentName', 'like', '%'.strtolower($paymentKey).'%')
+																	->where('saveOneTimeToken', '=', 1)
+																	->where('tokenInfo', '!=', '')
+																	->limit(3)
+																	->orderBy('orderNo', 'DESC')
+																	->get();
+            $this->getLogger(__METHOD__)->error('storedDetails', $storedDetails);
+            return !empty($storedDetails) ? $storedDetails : null;
+        }
+        
+        return null;
+    }
 }
