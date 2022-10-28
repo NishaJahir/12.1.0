@@ -25,14 +25,14 @@
         {# Display the saved account details #}
         {% if savedPaymentDetails is not empty %}
              {% for savedPaymentDetail in savedPaymentDetails %}
-             {{savedPaymentDetail}}
-                  <div class="row" id="remove_{{savedPaymentDetail.token}}">
+             {{savedPaymentDetail.decodedSavedPaymentDetails}}
+                  <div class="row" id="remove_{{savedPaymentDetail.decodedSavedPaymentDetails.token}}">
                     <div class="col-12 nn_masked_details">
-                        <input type="radio" name="nn_radio_option" value="{{savedPaymentDetail.token}}">
+                        <input type="radio" name="nn_radio_option" value="{{savedPaymentDetail.decodedSavedPaymentDetails.token}}">
                         <span>
-                            <img src="{{plugin_path('Novalnet')}}/images/novalnet_sepa.png" alt="{{paymentMopKey|lower}}" title="{{paymentMopKey|lower}}"> {{savedPaymentDetail.iban}}
+                            <img src="{{plugin_path('Novalnet')}}/images/novalnet_sepa.png" alt="{{paymentMopKey|lower}}" title="{{paymentMopKey|lower}}"> {{savedPaymentDetail.decodedSavedPaymentDetails.iban}}
                         </span>
-                        <span class="input-group-btn"><button type="button" class="btn btn-medium btn-appearance" value="{{savedPaymentDetail.token}}"><i aria-hidden="true" class="fa fa-gift"></i></button></span>
+                        <span class="input-group-btn"><button type="button" class="btn btn-medium btn-appearance" value="{{savedPaymentDetail.decodedSavedPaymentDetails.token}}"><i aria-hidden="true" class="fa fa-gift"></i></button></span>
                     </div>
                   </div>
              {% endfor %}
