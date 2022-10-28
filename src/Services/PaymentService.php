@@ -1208,16 +1208,19 @@ class PaymentService
     {
 	  $this->getLogger(__METHOD__)->error('key', $paymentKey);  
 	  $this->getLogger(__METHOD__)->error('no', $customerNo);  
+	  $storedDetails = [];
 	// Get the saved payment details for the registered customers
         if($customerNo != 'guest') {
-			$storedDetails = $database->query(TransactionLog::class)->where('paymentName', 'like', '%'.strtolower($paymentKey).'%')
-										->where('saveOneTimeToken', '=', 1)
-										->where('tokenInfo', '<>', '')
-										->limit(3)
-										->orderBy('orderNo', 'DESC')
-										->get();
-            $this->getLogger(__METHOD__)->error('storedDetails', $storedDetails);
-            return $storedDetails;
+		$storedDetails = $database->query(TransactionLog::class)->where('paymentName', 'like', '%'.strtolower($paymentKey).'%')
+									->where('saveOneTimeToken', '=', 1)
+									->where('tokenInfo', '<>', '')
+									->limit(3)
+									->orderBy('orderNo', 'DESC')
+									->get()
+									->toArray();
+            
         }
+	$this->getLogger(__METHOD__)->error('storedDetails', $storedDetails);
+	return $storedDetails;
     }
 }
