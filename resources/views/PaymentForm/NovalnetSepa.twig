@@ -25,14 +25,16 @@
         {# Display the saved account details #}
         {% if savedPaymentDetails is not empty %}
              {% for savedPaymentDetail in savedPaymentDetails %}
-             {% set tokenInfo = savedPaymentDetail.tokenInfo|json_decode(constant('JSON_OBJECT_AS_ARRAY'))  %}
-                  <div class="row" id="remove_{{tokenInfo.token}}">
+             {{savedPaymentDetail}}
+             {% set maskedDetails = savedPaymentDetail.tokenInfo | json_decode()  %}
+             {{maskedDetails}}
+                  <div class="row" id="remove_{{maskedDetails.token}}">
                     <div class="col-12 nn_masked_details">
-                        <input type="radio" name="nn_radio_option" value="{{tokenInfo.token}}">
+                        <input type="radio" name="nn_radio_option" value="{{maskedDetails.token}}">
                         <span>
-                            <img src="{{plugin_path('Novalnet')}}/images/novalnet_sepa.png" alt="{{paymentMopKey|lower}}" title="{{paymentMopKey|lower}}"> {{tokenInfo.iban}}
+                            <img src="{{plugin_path('Novalnet')}}/images/novalnet_sepa.png" alt="{{paymentMopKey|lower}}" title="{{paymentMopKey|lower}}"> {{maskedDetails.iban}}
                         </span>
-                        <span class="input-group-btn"><button type="button" class="btn btn-medium btn-appearance" value="{{tokenInfo.token}}"><i aria-hidden="true" class="fa fa-gift"></i></button></span>
+                        <span class="input-group-btn"><button type="button" class="btn btn-medium btn-appearance" value="{{maskedDetails.token}}"><i aria-hidden="true" class="fa fa-gift"></i></button></span>
                     </div>
                   </div>
              {% endfor %}
