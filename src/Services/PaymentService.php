@@ -1213,7 +1213,6 @@ class PaymentService
         if($customerNo != 'guest') {
 		$storedDetails = $database->query(TransactionLog::class)->where('paymentName', 'like', '%'.strtolower($paymentKey).'%')
 									->where('saveOneTimeToken', '=', 1)
-									->where('tokenInfo', '<>', '')
 									->limit(3)
 									->orderBy('orderNo', 'DESC')
 									->get()
