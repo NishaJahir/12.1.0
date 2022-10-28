@@ -148,10 +148,11 @@ class NovalnetServiceProvider extends ServiceProvider
                     $showBirthday = ((!isset($paymentRequestData['paymentRequestData']['customer']['billing']['company']) && !isset($paymentRequestData['paymentRequestData']['customer']['birth_date'])) ||  (isset($paymentRequestData['paymentRequestData']['customer']['birth_date']) && time() < strtotime('+18 years', strtotime($paymentRequestData['paymentRequestData']['customer']['birth_date'])))) ? true : false;
                     // Check if one click shopping enabled
                     $oneClickShopping = $settingsService->getPaymentSettingsValue('one_click_shopping', strtolower($paymentKey));
-                    $showOneClickShopping = (!empty($oneClickShopping) && $paymentRequestData['customer']['customer_no'] != 'guest') ? true : false;
+                    $showOneClickShopping = (!empty($oneClickShopping) && $paymentRequestData['paymentRequestData']['customer']['customer_no'] != 'guest') ? true : false;
                     $savedPaymentDetails = '';
+                    $this->getLogger(__METHOD__)->error('customer no', $paymentRequestData['paymentRequestData']['customer']['customer_no']);
                     if(!empty($showOneClickShopping)) {
-                        $savedPaymentDetails = $paymentService->getPaymentReferenceValues($paymentKey, $paymentRequestData['customer']['customer_no']);
+                        $savedPaymentDetails = $paymentService->getPaymentReferenceValues($paymentKey, $paymentRequestData['paymentRequestData']['customer']['customer_no']);
                     }
                     // Handle the Direct, Redirect and Form payments content type
                     if(in_array($paymentKey, ['NOVALNET_INVOICE', 'NOVALNET_PREPAYMENT', 'NOVALNET_CASHPAYMENT', 'NOVALNET_MULTIBANCO'])
