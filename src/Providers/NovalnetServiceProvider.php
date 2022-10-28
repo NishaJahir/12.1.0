@@ -143,7 +143,7 @@ class NovalnetServiceProvider extends ServiceProvider
         // Listen for the event that gets the payment method content
         $eventDispatcher->listen(
             GetPaymentMethodContent::class,
-            function(GetPaymentMethodContent $event) use($basketRepository, $paymentHelper, $paymentService, $sessionStorage, $twig, $settingsService) {
+            function(GetPaymentMethodContent $event) use($basketRepository, $paymentHelper, $paymentService, $sessionStorage, $twig, $settingsService, $dataBase) {
                 $paymentKey = $paymentHelper->getPaymentKeyByMop($event->getMop());
                 if($paymentKey) {
                     $paymentRequestData = $paymentService->generatePaymentParams($basketRepository->load(), $paymentKey);
@@ -159,7 +159,7 @@ class NovalnetServiceProvider extends ServiceProvider
                     $savedPaymentDetails = '';
                     $this->getLogger(__METHOD__)->error('customer no', $paymentRequestData['paymentRequestData']['customer']['customer_no']);
                     if(!empty($showOneClickShopping)) {
-                        $savedPaymentDetails = $database->query(TransactionLog::class)->where('paymentName', '=', strtolower($paymentKey))->where('saveOneTimeToken', '=', 1)->whereNull('tokenInfo', 'and', true)->orderBy('id', 'DESC')->limit(3)->get();
+                        $savedPaymentDetails = $database->query(TransactionLog::class)->where('paymentName', 'like', "%strtolower($paymentKey)%")->where('saveOneTimeToken', '=', 1)->whereNull('tokenInfo', 'and', true)->orderBy('id', 'DESC')->limit(3)->get();
                     }
                      $this->getLogger(__METHOD__)->error('saved', $savedPaymentDetails);
                     // Handle the Direct, Redirect and Form payments content type
