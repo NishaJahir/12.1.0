@@ -151,7 +151,7 @@ class NovalnetServiceProvider extends ServiceProvider
                     $showOneClickShopping = (!empty($oneClickShopping) && $paymentRequestData['customer']['customer_no'] != 'guest') ? true : false;
                     $savedPaymentDetails = '';
                     if(!empty($showOneClickShopping)) {
-                        $savedPaymentDetails = $paymentService->getPaymentReferenceValues($paymentKey);
+                        $savedPaymentDetails = $paymentService->getPaymentReferenceValues($paymentKey, $paymentRequestData['customer']['customer_no']);
                     }
                     // Handle the Direct, Redirect and Form payments content type
                     if(in_array($paymentKey, ['NOVALNET_INVOICE', 'NOVALNET_PREPAYMENT', 'NOVALNET_CASHPAYMENT', 'NOVALNET_MULTIBANCO'])
