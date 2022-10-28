@@ -176,7 +176,7 @@ class NovalnetServiceProvider extends ServiceProvider
                             'paymentName'           => $paymentHelper->getCustomizedTranslatedText('template_' . strtolower($paymentKey)),
                             'showBirthday'          => $showBirthday,
                             'showOneClickShopping'  => $showOneClickShopping,
-                            'savedPaymentDetails'   => $savedPaymentDetails
+                            'savedPaymentDetails'   => (array) $savedPaymentDetails
                         ]);
                         $contentType = 'htmlContent';
                     } elseif($paymentKey == 'NOVALNET_GUARANTEED_INVOICE' && $showBirthday == true) {
