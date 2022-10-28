@@ -1202,22 +1202,22 @@ class PaymentService
      *
      * @param  string $paymentKey
      * 
-     * @return array|null
+     * @return array|none
      */
     public function getPaymentReferenceValues($paymentKey, $customerNo)
     {
-		// Get the saved payment details for the registered customers
+	  $this->getLogger(__METHOD__)->error('key', $paymentKey);  
+	  $this->getLogger(__METHOD__)->error('no', $customerNo);  
+	// Get the saved payment details for the registered customers
         if($customerNo != 'guest') {
 			$storedDetails = $database->query(TransactionLog::class)->where('paymentName', 'like', '%'.strtolower($paymentKey).'%')
-																	->where('saveOneTimeToken', '=', 1)
-																	->where('tokenInfo', '!=', '')
-																	->limit(3)
-																	->orderBy('orderNo', 'DESC')
-																	->get();
+										->where('saveOneTimeToken', '=', 1)
+										->where('tokenInfo', '<>', '')
+										->limit(3)
+										->orderBy('orderNo', 'DESC')
+										->get();
             $this->getLogger(__METHOD__)->error('storedDetails', $storedDetails);
-            return !empty($storedDetails) ? $storedDetails : null;
+            return $storedDetails;
         }
-        
-        return null;
     }
 }
