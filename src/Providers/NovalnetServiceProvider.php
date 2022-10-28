@@ -33,6 +33,9 @@ use Plenty\Modules\Order\Pdf\Events\OrderPdfGenerationEvent;
 use Plenty\Modules\Order\Pdf\Models\OrderPdfGeneration;
 use Plenty\Modules\Document\Models\Document;
 use Plenty\Modules\Payment\Contracts\PaymentRepositoryContract;
+use Plenty\Modules\Plugin\DataBase\Contracts\DataBase;
+use Plenty\Modules\Plugin\DataBase\Contracts\Query;
+use Novalnet\Models\TransactionLog;
 use Plenty\Plugin\Log\Loggable;
 
 /**
@@ -65,6 +68,7 @@ class NovalnetServiceProvider extends ServiceProvider
      * @param EventProceduresService $eventProceduresService
      * @param PaymentRepositoryContract $paymentRepository
      * @param SettingsService $settingsService
+     * @param DataBase $dataBase
      */
     public function boot(Dispatcher $eventDispatcher,
                         BasketRepositoryContract $basketRepository,
@@ -75,13 +79,14 @@ class NovalnetServiceProvider extends ServiceProvider
                         Twig $twig,
                         EventProceduresService $eventProceduresService,
                         PaymentRepositoryContract $paymentRepository,
-                        SettingsService $settingsService
+                        SettingsService $settingsService,
+                        DataBase $dataBase
                         )
     {
         // Register the payment methods
         $this->registerPaymentMethods($payContainer);
         // Render the payment methods
-        $this->registerPaymentRendering($eventDispatcher, $basketRepository, $paymentHelper, $paymentService, $sessionStorage, $twig, $settingsService);
+        $this->registerPaymentRendering($eventDispatcher, $basketRepository, $paymentHelper, $paymentService, $sessionStorage, $twig, $settingsService, $dataBase);
         // Assign the payments
         $this->registerPaymentExecute($eventDispatcher, $paymentHelper, $paymentService, $sessionStorage, $settingsService);
         // Register the event procedures
@@ -121,6 +126,7 @@ class NovalnetServiceProvider extends ServiceProvider
      * @param FrontendSessionStorageFactoryContract $sessionStorage
      * @param Twig $twig
      * @param SettingsService $settingsService
+     * @param DataBase $dataBase
      *
      * @return none
      */
@@ -130,7 +136,8 @@ class NovalnetServiceProvider extends ServiceProvider
                                                 PaymentService $paymentService,
                                                 FrontendSessionStorageFactoryContract $sessionStorage,
                                                 Twig $twig,
-                                                SettingsService $settingsService
+                                                SettingsService $settingsService,
+                                                DataBase $dataBase
                                                 )
     {
         // Listen for the event that gets the payment method content
@@ -152,8 +159,9 @@ class NovalnetServiceProvider extends ServiceProvider
                     $savedPaymentDetails = '';
                     $this->getLogger(__METHOD__)->error('customer no', $paymentRequestData['paymentRequestData']['customer']['customer_no']);
                     if(!empty($showOneClickShopping)) {
-                        $savedPaymentDetails = $paymentService->getPaymentReferenceValues($paymentKey, $paymentRequestData['paymentRequestData']['customer']['customer_no']);
+                        $savedPaymentDetails = $database->query(TransactionLog::class)->where('paymentName', 'like', '%'.strtolower($paymentKey).'%')->where('saveOneTimeToken', '=', 1)->whereNull('tokenInfo', 'and', true)->orderBy('id', 'DESC')->limit(3)->get();
                     }
+                     $this->getLogger(__METHOD__)->error('saved', $savedPaymentDetails);
                     // Handle the Direct, Redirect and Form payments content type
                     if(in_array($paymentKey, ['NOVALNET_INVOICE', 'NOVALNET_PREPAYMENT', 'NOVALNET_CASHPAYMENT', 'NOVALNET_MULTIBANCO'])
                     || $paymentService->isRedirectPayment($paymentKey)
