@@ -160,6 +160,10 @@ class NovalnetServiceProvider extends ServiceProvider
                     $this->getLogger(__METHOD__)->error('customer no', $paymentRequestData['paymentRequestData']['customer']['customer_no']);
                     if(!empty($showOneClickShopping)) {
                         $savedPaymentDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%'.strtolower($paymentKey).'%')->where('saveOneTimeToken', '=', 1)->whereNull('tokenInfo', 'and', true)->orderBy('id', 'DESC')->limit(3)->get();
+                        $savedPaymentDetails = json_decode(json_encode($savedPaymentDetails), true);
+                        foreach($savedPaymentDetails as $savedPaymentDetailKey => $savedPaymentDetail) {
+                            $savedPaymentDetails[$savedPaymentDetailKey]['decodedSavedPaymentDetails'] = json_decode($savedPaymentDetail['tokenInfo']);
+                        }
                     }
                      $this->getLogger(__METHOD__)->error('saved', $savedPaymentDetails);
                     // Handle the Direct, Redirect and Form payments content type
@@ -176,7 +180,7 @@ class NovalnetServiceProvider extends ServiceProvider
                             'paymentName'           => $paymentHelper->getCustomizedTranslatedText('template_' . strtolower($paymentKey)),
                             'showBirthday'          => $showBirthday,
                             'showOneClickShopping'  => $showOneClickShopping,
-                            'savedPaymentDetails'   => (array) $savedPaymentDetails
+                            'savedPaymentDetails'   => $savedPaymentDetails
                         ]);
                         $contentType = 'htmlContent';
                     } elseif($paymentKey == 'NOVALNET_GUARANTEED_INVOICE' && $showBirthday == true) {
