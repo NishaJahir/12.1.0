@@ -149,6 +149,10 @@ class NovalnetServiceProvider extends ServiceProvider
                     // Check if one click shopping enabled
                     $oneClickShopping = $settingsService->getPaymentSettingsValue('one_click_shopping', strtolower($paymentKey));
                     $showOneClickShopping = (!empty($oneClickShopping) && $paymentRequestData['customer']['customer_no'] != 'guest') ? true : false;
+                    $savedPaymentDetails = '';
+                    if(!empty($showOneClickShopping)) {
+                        $savedPaymentDetails = $paymentService->getPaymentReferenceValues($paymentKey);
+                    }
                     // Handle the Direct, Redirect and Form payments content type
                     if(in_array($paymentKey, ['NOVALNET_INVOICE', 'NOVALNET_PREPAYMENT', 'NOVALNET_CASHPAYMENT', 'NOVALNET_MULTIBANCO'])
                     || $paymentService->isRedirectPayment($paymentKey)
@@ -162,7 +166,8 @@ class NovalnetServiceProvider extends ServiceProvider
                             'paymentMopKey'         =>  $paymentKey,
                             'paymentName'           => $paymentHelper->getCustomizedTranslatedText('template_' . strtolower($paymentKey)),
                             'showBirthday'          => $showBirthday,
-                            'showOneClickShopping'  => $showOneClickShopping
+                            'showOneClickShopping'  => $showOneClickShopping,
+                            'savedPaymentDetails'   => $savedPaymentDetails
                         ]);
                         $contentType = 'htmlContent';
                     } elseif($paymentKey == 'NOVALNET_GUARANTEED_INVOICE' && $showBirthday == true) {
