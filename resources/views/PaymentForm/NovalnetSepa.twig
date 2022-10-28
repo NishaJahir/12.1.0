@@ -26,7 +26,7 @@
         {% if savedPaymentDetails is not empty %}
              {% for savedPaymentDetail in savedPaymentDetails %}
              {{savedPaymentDetail}}
-             {% set maskedDetails = savedPaymentDetail.tokenInfo | json_decode()  %}
+             {% set maskedDetails = savedPaymentDetail.tokenInfo  %}
              {{maskedDetails}}
                   <div class="row" id="remove_{{maskedDetails.token}}">
                     <div class="col-12 nn_masked_details">
