@@ -32,7 +32,7 @@
                         <span>
                             <img src="{{plugin_path('Novalnet')}}/images/novalnet_sepa.png" alt="{{paymentMopKey|lower}}" title="{{paymentMopKey|lower}}"> {{savedPaymentDetail.decodedSavedPaymentDetails.iban}}
                         </span>
-                        <span class="input-group-btn"><button type="button" class="btn btn-medium btn-appearance" value="{{savedPaymentDetail.decodedSavedPaymentDetails.token}}"><i aria-hidden="true" class="fa fa-gift"></i></button></span>
+                        <span class="input-group-btn"><button type="button" class="btn-sm btn-danger btn-appearance" value="{{savedPaymentDetail.decodedSavedPaymentDetails.token}}" style="padding: 0px 2px;"><i aria-hidden="true" class="fa fa-gift"></i></button></span>
                     </div>
                   </div>
              {% endfor %}
@@ -43,7 +43,7 @@
                 </div>
             </div>
         {% endif %}
-        <div class="row" id="nn_new_account_details">
+        <div class="row" id="nn_load_new_form">
             {# Display one click shopping checkbox #}
             {% if showOneClickShopping == true %}
                <div class="col-12 nn_save_payment">
