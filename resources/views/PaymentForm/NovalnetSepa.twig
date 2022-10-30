@@ -25,7 +25,6 @@
         {# Display the saved account details #}
         {% if savedPaymentDetails is not empty %}
              {% for savedPaymentDetail in savedPaymentDetails %}
-             {{savedPaymentDetail.decodedSavedPaymentDetails}}
                   <div class="row" id="remove_{{savedPaymentDetail.decodedSavedPaymentDetails.token}}">
                     <div class="col-12 nn_masked_details">
                         <input type="radio" name="nn_radio_option" value="{{savedPaymentDetail.decodedSavedPaymentDetails.token}}">
