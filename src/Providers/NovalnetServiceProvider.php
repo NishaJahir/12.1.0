@@ -176,12 +176,13 @@ class NovalnetServiceProvider extends ServiceProvider
                     } elseif(in_array($paymentKey, ['NOVALNET_SEPA', 'NOVALNET_GUARANTEED_SEPA', 'NOVALNET_INSTALMENT_SEPA'])) {
                         $content = $twig->render('Novalnet::PaymentForm.NovalnetSepa',
                         [
-                            'nnPaymentProcessUrl'   => $paymentService->getProcessPaymentUrl(),
-                            'paymentMopKey'         =>  $paymentKey,
-                            'paymentName'           => $paymentHelper->getCustomizedTranslatedText('template_' . strtolower($paymentKey)),
-                            'showBirthday'          => $showBirthday,
-                            'showOneClickShopping'  => $showOneClickShopping,
-                            'savedPaymentDetails'   => $savedPaymentDetails
+                            'nnPaymentProcessUrl'          => $paymentService->getProcessPaymentUrl(),
+                            'paymentMopKey'                =>  $paymentKey,
+                            'paymentName'                  => $paymentHelper->getCustomizedTranslatedText('template_' . strtolower($paymentKey)),
+                            'showBirthday'                 => $showBirthday,
+                            'showOneClickShopping'         => $showOneClickShopping,
+                            'savedPaymentDetails'          => $savedPaymentDetails,
+                            'savedPaymentDetailRemovalUrl' => $paymentService->getPaymentDetailRemovalUrl(),
                         ]);
                         $contentType = 'htmlContent';
                     } elseif($paymentKey == 'NOVALNET_GUARANTEED_INVOICE' && $showBirthday == true) {
