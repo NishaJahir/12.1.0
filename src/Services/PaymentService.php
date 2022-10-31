@@ -1223,7 +1223,7 @@ class PaymentService
      */
     public function saveRecentOrderPaymentData($paymentName, $paymentResponseData)
     {
-        $database = pluginApp(DataBase::class);
+        $dataBase = pluginApp(DataBase::class);
         $getSavedPaymentDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%'.$paymentName.'%')->where('saveOneTimeToken', '=', 1)->whereNull('tokenInfo', 'and', true)->get();
         foreach($getSavedPaymentDetails as $getSavedPaymentDetail) {
             $tokenInfo = json_decode($getSavedPaymentDetails->tokenInfo, true);
