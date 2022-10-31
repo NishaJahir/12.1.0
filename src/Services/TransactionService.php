@@ -42,6 +42,7 @@ class TransactionService
             $transaction->transactionDatetime = date('Y-m-d H:i:s');
             $transaction->tid                 = $transactionData['tid'];
             $transaction->paymentName         = $transactionData['payment_name'];
+            $transaction->customerEmail       = $transactionData['customer_email'];
             $transaction->saveOneTimeToken    = $transactionData['save_onetime_token'];
             $transaction->tokenInfo           = $transactionData['token_info'];
             $transaction->additionalInfo      = !empty($transactionData['additional_info']) ? $transactionData['additional_info'] : '0';
