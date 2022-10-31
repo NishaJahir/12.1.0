@@ -6,6 +6,9 @@ jQuery(document).ready( function() {
     });
     // After the form submission disable the action
     jQuery('#novalnet_form').on('submit',function(){
-        jQuery('#novalnet_form_btn').attr('disabled',true);
+        if(jQuery('#nn_load_new_form').css('display') == 'none') {
+           jQuery('#nn_sepa_iban').removeAttr('required');      
+        }
+        jQuery('#novalnet_form_btn').prop('disabled',true);
     });
 });
