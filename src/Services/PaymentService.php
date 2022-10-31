@@ -618,6 +618,7 @@ class PaymentService
             'tid'                => !empty($parentTid) ? $parentTid : (!empty($paymentResponseData['transaction']['tid']) ? $paymentResponseData['transaction']['tid'] : $paymentResponseData['tid']),
             'ref_tid'            => $paymentResponseData['transaction']['refund']['tid'] ?? (!empty($paymentResponseData['transaction']['tid']) ? $paymentResponseData['transaction']['tid'] : $paymentResponseData['tid']),
             'payment_name'       => $paymentResponseData['payment_method'],
+            'customer_email'     => !empty($paymentResponseData['customer']['email']) ? $paymentResponseData['customer']['email'] : '',
             'save_onetime_token' => !empty($paymentResponseData['transaction']['payment_data']['token']) ? 1 : 0,
             'token_info'         => !empty($paymentResponseData['transaction']['payment_data']) ? json_encode($paymentResponseData['transaction']['payment_data']) : '',
             'additional_info'    => $additionalInfo ?? 0,
