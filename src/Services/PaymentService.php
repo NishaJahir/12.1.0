@@ -439,6 +439,16 @@ class PaymentService
     { 
         return $this->webstoreHelper->getCurrentWebstoreConfiguration()->domainSsl . '/' . $this->sessionStorage->getLocaleSettings()->language . '/payment/novalnet/redirectPayment/';
     }
+    
+    /**
+    * Get the saved payment detail removal URL
+    *
+    * @return string
+    */
+    public function getPaymentDetailRemovalUrl()
+    { 
+        return $this->webstoreHelper->getCurrentWebstoreConfiguration()->domainSsl . '/' . $this->sessionStorage->getLocaleSettings()->language . '/payment/novalnet/removePaymentDetail/';
+    }
 
     /**
      * Send the payment call request to Novalnet server
