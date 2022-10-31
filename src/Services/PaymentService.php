@@ -621,6 +621,11 @@ class PaymentService
         if(!empty($refundOrderTotalAmount) || !empty($creditOrderTotalAmount)) {
             $orderTotalAmount = $refundOrderTotalAmount ?? $creditOrderTotalAmount;
         }
+        // Save the recent order payment details
+        if (!empty($paymentResponseData['transaction']['payment_data']['token'])) {
+            $paymentName = (in_array($paymentResponseData['payment_method'], array('novalnet_sepa', 'novalnet_guaranteed_sepa', 'novalnet_instalment_sepa'))) ? 'sepa' : $paymentResponseData['payment_method'];
+            $this->saveRecentOrderPaymentData($paymentName, $paymentResponseData['transaction']['payment_data']);
+        }
         $transactionData = [
             'order_no'           => $paymentResponseData['transaction']['order_no'],
             'amount'             => !empty($orderTotalAmount) ? $orderTotalAmount : $paymentResponseData['transaction']['amount'],
@@ -1207,5 +1212,26 @@ class PaymentService
         $this->getLogger(__METHOD__)->error('Novalnet::updateApiVersion failed', $paymentResponseData);
     }
    }
+    
+    /**
+     * To save the recent order payment details into Novalnet tables
+     *
+     * @param  string $paymentName
+     * @param  array  $paymentResponseData
+     *
+     * @return none
+     */
+    public function saveRecentOrderPaymentData($paymentName, $paymentResponseData)
+    {
+        $database = pluginApp(DataBase::class);
+        $getSavedPaymentDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%'.$paymentName.'%')->where('saveOneTimeToken', '=', 1)->whereNull('tokenInfo', 'and', true)->get();
+        foreach($getSavedPaymentDetails as $getSavedPaymentDetail) {
+            $tokenInfo = json_decode($getSavedPaymentDetails->tokenInfo, true);
+            // Remove the previous same account/card details
+            if($paymentName == 'sepa' && $tokenInfo['iban'] == $paymentResponseData['iban'] || ($paymentName == 'novalnet_cc' && $tokenInfo['card_number'] == $paymentResponseData['card_number']  && $tokenInfo['card_expiry_month'] == $paymentResponseData['card_expiry_month'] && $tokenInfo['card_expiry_year'] == $paymentResponseData['card_expiry_year'])) {
+                $this->transactionService->removeSavedPaymentDetails($getSavedPaymentDetail); 
+            }
+        }
+    }
    
 }
