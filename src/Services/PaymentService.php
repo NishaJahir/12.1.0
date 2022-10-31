@@ -245,7 +245,7 @@ class PaymentService
             'last_name'    => $billingAddress->lastName ?? $customerName['lastName'],
             'gender'       => $billingAddress->gender ?? 'u',
             'email'        => $billingAddress->email,
-            'customer_no'  => $customerId ?? 'guest',
+            'customer_no'  => !empty($customerId) ? $customerId : 'guest',
             'customer_ip'  => $this->paymentHelper->getRemoteAddress()
         ];
         if(!empty($billingAddress->phone)) { // Check if phone field is given
