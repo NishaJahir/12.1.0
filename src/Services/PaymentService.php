@@ -1225,6 +1225,7 @@ class PaymentService
     {
         $dataBase = pluginApp(DataBase::class);
         $getSavedPaymentDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%'.$paymentName.'%')->where('saveOneTimeToken', '=', 1)->whereNull('tokenInfo', 'and', true)->get();
+        $this->getLogger(__METHOD__)->error('saveRecentOrderPaymentData', $getSavedPaymentDetails);
         foreach($getSavedPaymentDetails as $getSavedPaymentDetail) {
             $tokenInfo = json_decode($getSavedPaymentDetails->tokenInfo, true);
             // Remove the previous same account/card details
