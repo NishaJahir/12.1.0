@@ -200,7 +200,10 @@ class NovalnetServiceProvider extends ServiceProvider
                             'paymentMopKey'         =>  $paymentKey,
                             'paymentName'           => $paymentHelper->getCustomizedTranslatedText('template_' . strtolower($paymentKey)),
                             'transactionData'       => $paymentService->getCreditCardAuthenticationCallData($basketRepository->load(), strtolower($paymentKey)),
-                            'customData'            => $paymentService->getCcFormFields() ?? ''
+                            'customData'            => $paymentService->getCcFormFields() ?? '',
+                            'showOneClickShopping'         => $showOneClickShopping,
+                            'savedPaymentDetails'          => $savedPaymentDetails,
+                            'savedPaymentDetailRemovalUrl' => $paymentService->getPaymentDetailRemovalUrl(),
                         ]);
                         $contentType = 'htmlContent';
                     }
