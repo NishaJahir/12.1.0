@@ -18,6 +18,7 @@ use Novalnet\Services\SettingsService;
 use Plenty\Modules\Frontend\Session\Storage\Contracts\FrontendSessionStorageFactoryContract;
 use Plenty\Modules\Basket\Contracts\BasketRepositoryContract;
 use Plenty\Plugin\Templates\Twig;
+use Novalnet\Services\TransactionService;
 use Plenty\Plugin\Log\Loggable;
 /**
  * Class PaymentController
@@ -66,6 +67,11 @@ class PaymentController extends Controller
      * @var Twig
      */
     private $twig;
+    
+    /**
+     * @var TransactionService
+     */
+    private $transactionService;
 
     /**
      * Constructor.
@@ -78,6 +84,7 @@ class PaymentController extends Controller
      * @param FrontendSessionStorageFactoryContract $sessionStorage
      * @param BasketRepositoryContract $basketRepository
      * @param Twig $twig
+     * @param TransactionService $transactionService
      */
     public function __construct(Request $request,
                                 Response $response,
@@ -86,7 +93,8 @@ class PaymentController extends Controller
                                 SettingsService $settingsService,
                                 FrontendSessionStorageFactoryContract $sessionStorage,
                                 BasketRepositoryContract $basketRepository,
-                                Twig $twig
+                                Twig $twig,
+                                TransactionService $transactionService,
                                )
     {
         $this->request          = $request;
@@ -97,6 +105,7 @@ class PaymentController extends Controller
         $this->sessionStorage   = $sessionStorage;
         $this->basketRepository = $basketRepository;
         $this->twig             = $twig;
+        $this->transactionService   = $transactionService;
     }
 
     /**
@@ -264,5 +273,15 @@ class PaymentController extends Controller
                 return $this->response->redirectTo($this->sessionStorage->getLocaleSettings()->language . '/confirmation');
             }
         }
+    }
+    
+    /**
+     * Remove the saved payment details from the database
+     *
+     */
+    public function removePaymentDetail() 
+    {
+        $requestPostData = $this->request->all();
+        $this->transactionService->removeSavedPaymentDetails($requestPostData);
     }
 }
