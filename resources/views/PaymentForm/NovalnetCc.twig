@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="{{plugin_path('Novalnet')}}/css/novalnetUi.css">
 <script type="text/javascript" src="https://cdn.novalnet.de/js/v2/NovalnetUtility.min.js" defer></script>
 <script type="text/javascript" src="{{ plugin_path('Novalnet') }}/js/novalnetCc.js" defer></script>
-<script src="{{ plugin_path('Novalnet') }}/js/novalnetSaveCardDetails.js"></script>
+<script src="{{ plugin_path('Novalnet') }}/js/novalnetSavePaymentDetails.js"></script>
 
 {# Credit card payment form #}
 <form method="post" id="nn_cc_form" name="nn_cc_form" action="{{nnPaymentProcessUrl}}">
@@ -37,9 +37,9 @@
                     <div class="col-12 nn_masked_details">
                         <input type="radio" name="nn_radio_option" class="nn_saved_payment_detail" value="{{savedPaymentDetail.decodedSavedPaymentDetails.token}}">
                         <span>
-                            {% set cardType=savedPaymentDetail.decodedMaskingDetails.card_brand|lower %}
-                            <img src="{{ plugin_path('Novalnet') }}/images/novalnet_{{cardType}}.png" alt="{{savedPaymentDetail.decodedMaskingDetails.card_brand}}" title="{{savedPaymentDetail.decodedMaskingDetails.card_brand}}">
-                            {{trans("Novalnet::Customize.template_card_number_ending")}} {{savedPaymentDetail.decodedMaskingDetails.card_number[-4:]}} ({{trans("Novalnet::Customize.template_card_expires")}} {{"%02d"|format(savedPaymentDetail.decodedMaskingDetails.card_expiry_month)}} / {{savedPaymentDetail.decodedMaskingDetails.card_expiry_year[-2:]}})
+                            {% set cardType=savedPaymentDetail.decodedSavedPaymentDetails.card_brand|lower %}
+                            <img src="{{ plugin_path('Novalnet') }}/images/novalnet_{{cardType}}.png" alt="{{savedPaymentDetail.decodedSavedPaymentDetails.card_brand}}" title="{{savedPaymentDetail.decodedSavedPaymentDetails.card_brand}}">
+                            {{trans("Novalnet::Customize.template_card_number_ending")}} {{savedPaymentDetail.decodedSavedPaymentDetails.card_number[-4:]}} ({{trans("Novalnet::Customize.template_card_expires")}} {{"%02d"|format(savedPaymentDetail.decodedSavedPaymentDetails.card_expiry_month)}} / {{savedPaymentDetail.decodedSavedPaymentDetails.card_expiry_year[-2:]}})
                         </span>
                         <span class="input-group-btn"><button type="button" class="btn-sm btn-danger btn-appearance" value="{{savedPaymentDetail.decodedSavedPaymentDetails.token}}" onclick="removePaymentDetails('{{savedPaymentDetail.decodedSavedPaymentDetails.token}}', '{{savedPaymentDetail.tid}}')" style="padding: 0px 2px;"><i aria-hidden="true" class="fa fa-gift"></i></button></span>
                     </div>
