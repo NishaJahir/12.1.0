@@ -90,4 +90,26 @@ class TransactionService
         }
         $database->save($orderDetail);
     }
+    
+    /**
+     * Delete payment token from the database table
+     *
+     * @param array $requestPostData
+     */
+    public function removeSavedPaymentDetails($requestPostData) 
+    {
+        try {
+            $database = pluginApp(DataBase::class);
+            $orderDetails = $database->query(TransactionLog::class)->where('tid', '=', $requestPostData['tid'])->get();
+            foreach($orderDetails as $orderDetail) {
+                $orderDetail->saveOneTimeToken = 0;
+                $orderDetail->tokenInfo = '';    
+            }
+            $database->save($orderDetail);
+		    $updatedView = $database->query(TransactionLog::class)->where('tid', '=', $requestPostData['tid'])->get();
+		    $this->getLogger(__METHOD__)->error('After removed the data', $updatedView);
+        } catch (\Exception $e) {
+            $this->getLogger(__METHOD__)->error('Removal of payment token failed!.', $e);
+        }
+    }
 }
