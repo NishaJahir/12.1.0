@@ -94,7 +94,7 @@ class PaymentController extends Controller
                                 FrontendSessionStorageFactoryContract $sessionStorage,
                                 BasketRepositoryContract $basketRepository,
                                 Twig $twig,
-                                TransactionService $transactionService,
+                                TransactionService $transactionService
                                )
     {
         $this->request          = $request;
