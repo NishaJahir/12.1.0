@@ -24,10 +24,13 @@
         {% endif %}
         {# Display the saved account details #}
         {% if savedPaymentDetails is not empty %}
+              <input type="hidden" id="nn_payment_detail_removal_url" name="nn_payment_detail_removal_url" value="{{savedPaymentDetailRemovalUrl}}">
+              <input type="hidden" id="remove_saved_payment_detail" name="remove_saved_payment_detail" value="{{trans("Novalnet::Customize.template_remove_account_detail")}}">
+              <input type="hidden" id="removed_saved_payment_detail" name="removed_saved_payment_detail" value="{{trans("Novalnet::Customize.template_account_detail_removed")}}">
              {% for savedPaymentDetail in savedPaymentDetails %}
                   <div class="row" id="remove_{{savedPaymentDetail.decodedSavedPaymentDetails.token}}">
                     <div class="col-12 nn_masked_details">
-                        <input type="radio" name="nn_radio_option" value="{{savedPaymentDetail.decodedSavedPaymentDetails.token}}">
+                        <input type="radio" name="nn_radio_option" class="nn_saved_payment_detail" value="{{savedPaymentDetail.decodedSavedPaymentDetails.token}}">
                         <span>
                             <img src="{{plugin_path('Novalnet')}}/images/novalnet_sepa.png" alt="{{paymentMopKey|lower}}" title="{{paymentMopKey|lower}}"> {{savedPaymentDetail.decodedSavedPaymentDetails.iban}}
                         </span>
