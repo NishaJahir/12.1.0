@@ -2,6 +2,7 @@
 <link rel="stylesheet" href="{{plugin_path('Novalnet')}}/css/novalnetUi.css">
 <script type="text/javascript" src="https://cdn.novalnet.de/js/v2/NovalnetUtility.min.js" defer></script>
 <script type="text/javascript" src="{{ plugin_path('Novalnet') }}/js/novalnetCc.js" defer></script>
+<script src="{{ plugin_path('Novalnet') }}/js/novalnetSaveCardDetails.js"></script>
 
 {# Credit card payment form #}
 <form method="post" id="nn_cc_form" name="nn_cc_form" action="{{nnPaymentProcessUrl}}">
@@ -26,9 +27,45 @@
             <input type="hidden" id="nn_reinitializePayment" name="nn_reinitializePayment" value="{{reinitializePayment}}">
             <input type="hidden" id="nn_order_amount" name="nn_order_amount" value="{{orderAmount}}">
         {% endif %}
-        {# Load the Iframe #}
-        <div class="loader"></div>
-        <iframe id="nn_iframe" frameborder="0" scrolling="no" width="100%"></iframe>
+        {# Display the saved account details #}
+        {% if savedPaymentDetails is not empty %}
+              <input type="hidden" id="nn_payment_detail_removal_url" name="nn_payment_detail_removal_url" value="{{savedPaymentDetailRemovalUrl}}">
+              <input type="hidden" id="remove_saved_payment_detail" name="remove_saved_payment_detail" value="{{trans("Novalnet::Customize.template_remove_card_detail")}}">
+              <input type="hidden" id="removed_saved_payment_detail" name="removed_saved_payment_detail" value="{{trans("Novalnet::Customize.template_card_detail_removed")}}">
+             {% for savedPaymentDetail in savedPaymentDetails %}
+                  <div class="row" id="remove_{{savedPaymentDetail.decodedSavedPaymentDetails.token}}">
+                    <div class="col-12 nn_masked_details">
+                        <input type="radio" name="nn_radio_option" class="nn_saved_payment_detail" value="{{savedPaymentDetail.decodedSavedPaymentDetails.token}}">
+                        <span>
+                            {% set cardType=savedPaymentDetail.decodedMaskingDetails.card_brand|lower %}
+                            <img src="{{ plugin_path('Novalnet') }}/images/novalnet_{{cardType}}.png" alt="{{savedPaymentDetail.decodedMaskingDetails.card_brand}}" title="{{savedPaymentDetail.decodedMaskingDetails.card_brand}}">
+                            {{trans("Novalnet::Customize.template_card_number_ending")}} {{savedPaymentDetail.decodedMaskingDetails.card_number[-4:]}} ({{trans("Novalnet::Customize.template_card_expires")}} {{"%02d"|format(savedPaymentDetail.decodedMaskingDetails.card_expiry_month)}} / {{savedPaymentDetail.decodedMaskingDetails.card_expiry_year[-2:]}})
+                        </span>
+                        <span class="input-group-btn"><button type="button" class="btn-sm btn-danger btn-appearance" value="{{savedPaymentDetail.decodedSavedPaymentDetails.token}}" onclick="removePaymentDetails('{{savedPaymentDetail.decodedSavedPaymentDetails.token}}', '{{savedPaymentDetail.tid}}')" style="padding: 0px 2px;"><i aria-hidden="true" class="fa fa-gift"></i></button></span>
+                    </div>
+                  </div>
+             {% endfor %}
+             <div class="row" id="nn_add_new_details">
+                <div class="col-12">
+                    <input type="hidden" name="nn_customer_selected_token" id="nn_customer_selected_token">          
+                    <input type="radio"  name="nn_radio_option" id="nn_toggle_form">{{trans("Novalnet::Customize.template_add_new_card_details")}}
+                </div>
+            </div>
+        {% endif %}
+        <div class="row" id="nn_load_new_form">
+            {# Display one click shopping checkbox #}
+            {% if showOneClickShopping == true %}
+               <div class="col-12 nn_save_payment">
+                    <input type="checkbox" name="nn_save_payment_data" id="nn_save_payment_data" checked>                    
+                    <strong>{{trans("Novalnet::Customize.template_save_card_data")}}</strong>
+               </div>
+            {% endif %}
+            <div class="col-12 form-horizontal">
+                {# Load the Iframe #}
+                <div class="loader"></div>
+                <iframe id="nn_iframe" frameborder="0" scrolling="no" width="100%"></iframe>
+            </div>
+        </div>
     </div>
 
     <div class="modal-footer">
