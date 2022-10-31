@@ -12,11 +12,11 @@ use Novalnet\Models\TransactionLog;
 use Plenty\Modules\Plugin\DataBase\Contracts\Migrate;
 
 /**
- * Class UpdateTransactionTable12100
+ * Class UpdateTransactionTable121000
  *
  * @package Novalnet\Migrations
  */
-class UpdateTransactionTable12100
+class UpdateTransactionTable121000
 {
     /**
      * Create transaction log table
