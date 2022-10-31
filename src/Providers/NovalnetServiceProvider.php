@@ -156,10 +156,10 @@ class NovalnetServiceProvider extends ServiceProvider
                     // Check if one click shopping enabled
                     $oneClickShopping = $settingsService->getPaymentSettingsValue('one_click_shopping', strtolower($paymentKey));
                     $showOneClickShopping = (!empty($oneClickShopping) && $paymentRequestData['paymentRequestData']['customer']['customer_no'] != 'guest') ? true : false;
+                    $this->getLogger(__METHOD__)->error('show one', $showOneClickShopping);
                     $savedPaymentDetails = '';
-                    $this->getLogger(__METHOD__)->error('customer no', $paymentRequestData['paymentRequestData']['customer']['customer_no']);
                     if(!empty($showOneClickShopping)) {
-                        $savedPaymentDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%'.strtolower($paymentKey).'%')->where('saveOneTimeToken', '=', 1)->whereNull('tokenInfo', 'and', true)->orderBy('id', 'DESC')->limit(3)->get();
+                        $savedPaymentDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%'.strtolower($paymentKey).'%')->where('customerEmail', '=', $paymentRequestData['paymentRequestData']['customer']['email'])->where('saveOneTimeToken', '=', 1)->whereNull('tokenInfo', 'and', true)->orderBy('id', 'DESC')->limit(3)->get();
                         $savedPaymentDetails = json_decode(json_encode($savedPaymentDetails), true);
                         foreach($savedPaymentDetails as $savedPaymentDetailKey => $savedPaymentDetail) {
                             $savedPaymentDetails[$savedPaymentDetailKey]['decodedSavedPaymentDetails'] = json_decode($savedPaymentDetail['tokenInfo'], true);
