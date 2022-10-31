@@ -181,31 +181,36 @@ class PaymentController extends Controller
         $orderAmount = !empty($paymentRequestPostData['nn_order_amount']) ? $paymentRequestPostData['nn_order_amount'] : 0;
         // Get the payment request params
         $paymentRequestData = $this->paymentService->generatePaymentParams($this->basketRepository->load(), $paymentRequestPostData['nn_payment_key'], $orderAmount);
-        // 
-        
-        // Setting up the account data to the server for SEPA processing
-        if(in_array($paymentRequestPostData['nn_payment_key'], ['NOVALNET_SEPA', 'NOVALNET_GUARANTEED_SEPA', 'NOVALNET_INSTALMENT_SEPA'])) {
-            // If the customer has wish to save the account data for future purchases, we notify the server
+        // If the customer has wish to pay with saved payment detail, we use the relevant token
+        if (!empty($paymentRequestPostData['nn_customer_selected_token'])) {
+             $paymentRequestData['paymentRequestData']['transaction']['payment_data']['token'] = $paymentRequestPostData['nn_customer_selected_token'];
+        } else {
+             // If the customer has wish to save the account data for future purchases, we notify the server
             if (!empty($paymentRequestPostData['nn_save_payment_data'])) {
                 $paymentRequestData['paymentRequestData']['transaction']['create_token'] = 1;
             }
-            $paymentRequestData['paymentRequestData']['transaction']['payment_data'] = ['iban'  => $paymentRequestPostData['nn_sepa_iban']];
-            if(!empty($paymentRequestPostData['nn_sepa_bic'])) {
-                $paymentRequestData['paymentRequestData']['transaction']['payment_data']['bic'] = $paymentRequestPostData['nn_sepa_bic'];
+            
+            // Setting up the account data to the server for SEPA processing
+            if(in_array($paymentRequestPostData['nn_payment_key'], ['NOVALNET_SEPA', 'NOVALNET_GUARANTEED_SEPA', 'NOVALNET_INSTALMENT_SEPA'])) {
+
+                $paymentRequestData['paymentRequestData']['transaction']['payment_data'] = ['iban'  => $paymentRequestPostData['nn_sepa_iban']];
+                if(!empty($paymentRequestPostData['nn_sepa_bic'])) {
+                    $paymentRequestData['paymentRequestData']['transaction']['payment_data']['bic'] = $paymentRequestPostData['nn_sepa_bic'];
+                }
             }
-        }
-        // Setting up the birthday for guaranteed payments
-        if(in_array($paymentRequestPostData['nn_payment_key'], ['NOVALNET_GUARANTEED_INVOICE', 'NOVALNET_GUARANTEED_SEPA']) && !empty($paymentRequestPostData['nn_show_dob'])) {
-            $paymentRequestData['paymentRequestData']['customer']['birth_date'] = sprintf('%4d-%02d-%02d', $paymentRequestPostData['nn_guarantee_year'], $paymentRequestPostData['nn_guarantee_month'], $paymentRequestPostData['nn_guarantee_date']);
-        }
-        // Setting up the alternative card data to the server for card processing
-        if($paymentRequestPostData['nn_payment_key'] == 'NOVALNET_CC') {
-            $paymentRequestData['paymentRequestData']['transaction']['payment_data'] = [
-                'pan_hash'   => $paymentRequestPostData['nn_pan_hash'],
-                'unique_id'  => $paymentRequestPostData['nn_unique_id']
-            ];
-            // Set the Do redirect value into session for the redirection
-            $this->sessionStorage->getPlugin()->setValue('nnDoRedirect', $paymentRequestPostData['nn_cc3d_redirect']);
+            // Setting up the birthday for guaranteed payments
+            if(in_array($paymentRequestPostData['nn_payment_key'], ['NOVALNET_GUARANTEED_INVOICE', 'NOVALNET_GUARANTEED_SEPA']) && !empty($paymentRequestPostData['nn_show_dob'])) {
+                $paymentRequestData['paymentRequestData']['customer']['birth_date'] = sprintf('%4d-%02d-%02d', $paymentRequestPostData['nn_guarantee_year'], $paymentRequestPostData['nn_guarantee_month'], $paymentRequestPostData['nn_guarantee_date']);
+            }
+            // Setting up the alternative card data to the server for card processing
+            if($paymentRequestPostData['nn_payment_key'] == 'NOVALNET_CC') {
+                $paymentRequestData['paymentRequestData']['transaction']['payment_data'] = [
+                    'pan_hash'   => $paymentRequestPostData['nn_pan_hash'],
+                    'unique_id'  => $paymentRequestPostData['nn_unique_id']
+                ];
+                // Set the Do redirect value into session for the redirection
+                $this->sessionStorage->getPlugin()->setValue('nnDoRedirect', $paymentRequestPostData['nn_cc3d_redirect']);
+            }
         }
         // Setting up the wallet token for the Google pay payment
         if($paymentRequestPostData['nn_payment_key'] == 'NOVALNET_GOOGLEPAY') {
