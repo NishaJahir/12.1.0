@@ -2,7 +2,7 @@ jQuery(document).ready(function () {
     loadCardForm();
     jQuery('#nn_cc_form').submit( function (e) {
         jQuery('#novalnet_form_btn').attr('disabled',true);
-        if(jQuery('#nn_pan_hash').val().trim() == '') {
+        if(jQuery('#nn_pan_hash').val().trim() == '' && jQuery('#nn_load_new_form').css('display') !== 'none') {
             NovalnetUtility.getPanHash();
             e.preventDefault();
             e.stopImmediatePropagation();
