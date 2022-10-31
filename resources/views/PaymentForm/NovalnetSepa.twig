@@ -34,7 +34,7 @@
                         <span>
                             <img src="{{plugin_path('Novalnet')}}/images/novalnet_sepa.png" alt="{{paymentMopKey|lower}}" title="{{paymentMopKey|lower}}"> {{savedPaymentDetail.decodedSavedPaymentDetails.iban}}
                         </span>
-                        <span class="input-group-btn"><button type="button" class="btn-sm btn-danger btn-appearance" value="{{savedPaymentDetail.decodedSavedPaymentDetails.token}}" style="padding: 0px 2px;"><i aria-hidden="true" class="fa fa-gift"></i></button></span>
+                        <span class="input-group-btn"><button type="button" class="btn-sm btn-danger btn-appearance" value="{{savedPaymentDetail.decodedSavedPaymentDetails.token}}" onclick="removePaymentDetails('{{savedPaymentDetail.decodedSavedPaymentDetails.token}}', '{{savedPaymentDetail.tid}}')" style="padding: 0px 2px;"><i aria-hidden="true" class="fa fa-gift"></i></button></span>
                     </div>
                   </div>
              {% endfor %}
