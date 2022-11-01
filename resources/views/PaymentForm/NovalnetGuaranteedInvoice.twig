@@ -58,9 +58,11 @@
            {% endif %}
            
            {# Instalment Process #}
+           <input type="hidden" name="nn_instalment_order_amount" id="nn_instalment_order_amount" value="{{(instalmentNetAmount / 100)}}">
+           <input type="hidden" name="nn_instalment_order_currency" id="nn_instalment_order_currency" value="{{orderCurrency}}">
            <div class="row">
-                <div class="col-12">
-                    <span>{{trans("Novalnet::Customize.template_instalment_plan_label")}} ({{trans("Novalnet::Customize.template_instalment_netamount")}} {{(instalmentNetAmount/100)|number_format(2, ',', '.')}}) <span class="text-danger">*</span></span>
+                <div class="col-12" id="instalment_plan_label">
+                    <span>{{trans("Novalnet::Customize.template_instalment_plan_label")}} <strong class="text-info">({{trans("Novalnet::Customize.template_instalment_netamount")}} {{(instalmentNetAmount/100)|number_format(2, ',', '.')}}) {{orderCurrency}} <span class="text-danger">*</span></strong></span>
                 </div>
                 {% if instalmentCycles is not empty %}
                 <div class="col-12">
@@ -69,7 +71,7 @@
                             {% for instalmentCycle in instalmentCycles %}
                                 {% set instalmentCycleAmount = (instalmentNetAmount / instalmentCycle)|round %}
                                 {% if instalmentCycleAmount > 999 %}
-                                    <option value="{{instalmentCycle}}">{{instalmentCycle}} × {{(instalmentCycleAmount / 100)|number_format(2, ',', '.')}} {{orderCurrency}} {{trans("Novalnet::Customize.template_instalment_cycle_per_month_text")}}</option>
+                                    <option value="{{instalmentCycle}}" data-amount="{{(instalmentCycleAmount / 100)|number_format(2, ',', '.')}} {{orderCurrency}}" data-cycle-amount="{{(instalmentCycleAmount / 100)}}">{{instalmentCycle}} × {{(instalmentCycleAmount / 100)|number_format(2, ',', '.')}} {{orderCurrency}} {{trans("Novalnet::Customize.template_instalment_cycle_per_month_text")}}</option>
                                 {% endif %}
                             {% endfor %}
                          </select>
@@ -78,6 +80,18 @@
                 </div>
                 {% endif %}
            </div>
+           
+           <div class="container">           
+                <table class="table table-striped table-hover table-sm nn_instalment_table">
+                    <thead>
+                        <tr>
+                            <th>{{trans("Novalnet::Customize.template_instalment_cycle_label")}}</th>
+                            <th>{{trans("Novalnet::Customize.template_instalment_cycle_amount_label")}}</th>
+                        </tr>
+                    </thead>
+                    <tbody id="nn_instalment_cycle_information"></tbody>
+                </table>
+           </div>   
     </div>
 
     <div class="modal-footer">
