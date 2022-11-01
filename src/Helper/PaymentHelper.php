@@ -527,6 +527,8 @@ class PaymentHelper
             'CASHPAYMENT'                   => 'NOVALNET_CASHPAYMENT',
             'PRZELEWY24'                    => 'NOVALNET_PRZELEWY24',
             'EPS'                           => 'NOVALNET_EPS',
+            'INSTALMENT_INVOICE'            => 'NOVALNET_INSTALMENT_INVOICE',
+            'INSTALMENT_DIRECT_DEBIT_SEPA'  => 'NOVALNET_INSTALMENT_SEPA',
             'PAYPAL'                        => 'NOVALNET_PAYPAL',
             'POSTFINANCE_CARD'              => 'NOVALNET_POSTFINANCE_CARD',
             'POSTFINANCE'                   => 'NOVALNET_POSTFINANCE_EFINANCE',
