@@ -1225,9 +1225,10 @@ class PaymentService
     {
         $dataBase = pluginApp(DataBase::class);
         $getSavedPaymentDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%'.$paymentName.'%')->where('saveOneTimeToken', '=', 1)->whereNull('tokenInfo', 'and', true)->get();
-        $this->getLogger(__METHOD__)->error('saveRecentOrderPaymentData', $getSavedPaymentDetails);
+        $getSavedPaymentDetails = json_decode(json_encode($getSavedPaymentDetails), true);
+        $this->getLogger(__METHOD__)->error('saveRecentOrderPaymentData123', $getSavedPaymentDetails);
         foreach($getSavedPaymentDetails as $getSavedPaymentDetail) {
-            $tokenInfo = json_decode($getSavedPaymentDetail->tokenInfo, true);
+            $tokenInfo = json_decode($getSavedPaymentDetail['tokenInfo'], true);
             // Remove the previous same account/card details
             if($paymentName == 'sepa' && $tokenInfo['iban'] == $paymentResponseData['iban'] || ($paymentName == 'novalnet_cc' && $tokenInfo['card_number'] == $paymentResponseData['card_number']  && $tokenInfo['card_expiry_month'] == $paymentResponseData['card_expiry_month'] && $tokenInfo['card_expiry_year'] == $paymentResponseData['card_expiry_year'])) {
                 $this->transactionService->removeSavedPaymentDetails($getSavedPaymentDetail); 
