@@ -212,6 +212,9 @@ class PaymentController extends Controller
                 $this->sessionStorage->getPlugin()->setValue('nnDoRedirect', $paymentRequestPostData['nn_cc3d_redirect']);
             }
         }
+        if($paymentRequestPostData['nn_payment_key'] == 'NOVALNET_INSTALMENT_INVOICE') {
+              $paymentRequestData['paymentRequestData']['instalment']['cycles'] = $paymentRequestPostData['nn_instalment_cycle']; 
+        }
         // Setting up the wallet token for the Google pay payment
         if($paymentRequestPostData['nn_payment_key'] == 'NOVALNET_GOOGLEPAY') {
             $paymentRequestData['paymentRequestData']['transaction']['payment_data'] = ['wallet_token'  => $paymentRequestPostData['nn_google_pay_token']];
