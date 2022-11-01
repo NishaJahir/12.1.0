@@ -67,7 +67,7 @@
                 {% if instalmentCycles is not empty %}
                 <div class="col-12">
                     <div class="input-unit">
-                         <select id="nn_instalment_cycle">
+                         <select id="nn_instalment_cycle" class="custom-select">
                             {% for instalmentCycle in instalmentCycles %}
                                 {% set instalmentCycleAmount = (instalmentNetAmount / instalmentCycle)|round %}
                                 {% if instalmentCycleAmount > 999 %}
