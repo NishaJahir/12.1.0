@@ -192,7 +192,7 @@ class NovalnetServiceProvider extends ServiceProvider
                             'showBirthday'          => $showBirthday,
                             'instalmentNetAmount'   => $paymentRequestData['paymentRequestData']['transaction']['amount'],
                             'orderCurrency'         => $paymentRequestData['paymentRequestData']['transaction']['currency'],
-                            'instalmentCycles'      => $settingsService->getPaymentSettingsValue('cycle', strtolower($paymentKey));
+                            'instalmentCycles'      => $settingsService->getPaymentSettingsValue('cycle', strtolower($paymentKey))
                         ]);
                         $contentType = 'htmlContent';
                     } elseif($paymentKey == 'NOVALNET_CC') {
