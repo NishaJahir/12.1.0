@@ -67,9 +67,9 @@
                     <div class="input-unit">
                          <select id="nn_instalment_cycle">
                             {% for instalmentCycle in instalmentCycles %}
-                                {% set instalmentCycleAmount = (instalmentNetAmount / instalmentCycle) %}
+                                {% set instalmentCycleAmount = (instalmentNetAmount / instalmentCycle)|round %}
                                 {% if instalmentCycleAmount > 999 %}
-                                    <option value="{{instalmentCycle}}">{{instalmentCycle}} × {{instalmentCycleAmount/100|number_format(2, ',', '.')}} {{orderCurrency}} {{trans("Novalnet::Customize.template_instalment_cycle_per_month_text")}}</option>
+                                    <option value="{{instalmentCycle}}">{{instalmentCycle}} × {{(instalmentCycleAmount / 100)|number_format(2, ',', '.')}} {{orderCurrency}} {{trans("Novalnet::Customize.template_instalment_cycle_per_month_text")}}</option>
                                 {% endif %}
                             {% endfor %}
                          </select>
