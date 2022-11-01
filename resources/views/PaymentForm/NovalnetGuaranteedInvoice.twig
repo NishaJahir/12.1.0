@@ -23,37 +23,61 @@
             <input type="hidden" id="nn_reinitializePayment" name="nn_reinitializePayment" value="{{reinitializePayment}}">
             <input type="hidden" id="nn_order_amount" name="nn_order_amount" value="{{orderAmount}}">
         {% endif %}
-        <div class="row">
-            <div class="col-12">
-                <div class="modal-title" style="color:#008EBF;"><b>{{trans("Novalnet::PaymentMethod.note")}}</b>{{trans("Novalnet::PaymentMethod.dobshowingreason")}}</div><br>
-            </div>
-        </div>
-
-        {# Date of Birth Form #}
-        <div class="row">
-            <div class="col-12">
-                <b><label for="nn_birthday">{{trans("Novalnet::Customize.template_birthdate_label")}}<span class="text-danger">*</span></label></b>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-sm-4">
-                <input type="tel" name="nn_guarantee_date" id="nn_guarantee_date" maxlength="2" placeholder="{{trans("Novalnet::PaymentMethod.day")}}" autocomplete="off" class="form-control">
+        {% if showBirthday == true %}
+            <div class="row">
+                <div class="col-12">
+                    <div class="modal-title" style="color:#008EBF;"><b>{{trans("Novalnet::PaymentMethod.note")}}</b>{{trans("Novalnet::PaymentMethod.dobshowingreason")}}</div><br>
+                </div>
             </div>
 
-            <div class="col-sm-4">
-                 <select id="nn_guarantee_month" type="text" name="nn_guarantee_month" class="form-control">
-                   <option value="0">{{trans("Novalnet::PaymentMethod.monthOption")}}</option>
-                    {% for i in 1..12 %}
-                        <option value="{{i}}">{{ trans("Novalnet::PaymentMethod.month#{i}") }}</option>
-                    {% endfor %}
-                  </select>
-             </div>
+            {# Date of Birth Form #}
+            <div class="row">
+                <div class="col-12">
+                    <b><label for="nn_birthday">{{trans("Novalnet::Customize.template_birthdate_label")}}<span class="text-danger">*</span></label></b>
+                </div>
+            </div>
 
-            <div class="col-sm-4 autocomplete">
-                <input type="text" name="nn_guarantee_year" id="nn_guarantee_year" maxlength="4" placeholder="{{trans("Novalnet::PaymentMethod.year")}}" autocomplete="off" class="form-control">
-            </div>
-            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <input type="tel" name="nn_guarantee_date" id="nn_guarantee_date" maxlength="2" placeholder="{{trans("Novalnet::PaymentMethod.day")}}" autocomplete="off" class="form-control">
+                </div>
+
+                <div class="col-sm-4">
+                     <select id="nn_guarantee_month" type="text" name="nn_guarantee_month" class="form-control">
+                       <option value="0">{{trans("Novalnet::PaymentMethod.monthOption")}}</option>
+                        {% for i in 1..12 %}
+                            <option value="{{i}}">{{trans("Novalnet::PaymentMethod.month#{i}")}}</option>
+                        {% endfor %}
+                      </select>
+                 </div>
+
+                <div class="col-sm-4 autocomplete">
+                    <input type="text" name="nn_guarantee_year" id="nn_guarantee_year" maxlength="4" placeholder="{{trans("Novalnet::PaymentMethod.year")}}" autocomplete="off" class="form-control">
+                </div>
+              </div>
+           {% endif %}
+           
+           {# Instalment Process #}
+           <div class="row">
+                <div class="col-12">
+                    <span>{{trans("Novalnet::Customize.template_instalment_plan_label")}} ({{trans("Novalnet::Customize.template_instalment_netamount")}} {{(instalmentNetAmount/100)|number_format(2, ',', '.')}}) <span class="text-danger">*</span></span>
+                </div>
+                {% if instalmentCycles is not empty %}
+                <div class="col-12">
+                    <div class="input-unit">
+                         <select id="nn_instalment_cycle">
+                            {% for instalmentCycle in instalmentCycles %}
+                                {% set instalmentCycleAmount = (instalmentNetAmount / instalmentCycle) %}
+                                {% if instalmentCycleAmount > 999 %}
+                                    <option value="{{instalmentCycle}}">{{instalmentCycle}} × {{instalmentCycleAmount/100|number_format(2, ',', '.')}} {{orderCurrency}} {{trans("Novalnet::Customize.template_instalment_cycle_per_month_text")}}</option>
+                                {% endif %}
+                            {% endfor %}
+                         </select>
+                         <label for="nn_instalment_cycle">{{trans("Novalnet::Customize.template_instalment_cycle_label")}}</label>
+                    </div>
+                </div>
+                {% endif %}
+           </div>
     </div>
 
     <div class="modal-footer">
