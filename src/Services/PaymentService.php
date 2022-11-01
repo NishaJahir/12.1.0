@@ -394,6 +394,8 @@ class PaymentService
             'NOVALNET_CASHPAYMENT'          => 'CASHPAYMENT',
             'NOVALNET_PRZELEWY24'           => 'PRZELEWY24',
             'NOVALNET_EPS'                  => 'EPS',
+            'NOVALNET_INSTALMENT_INVOICE'   => 'INSTALMENT_INVOICE',
+            'NOVALNET_INSTALMENT_SEPA'      => 'INSTALMENT_DIRECT_DEBIT_SEPA',
             'NOVALNET_PAYPAL'               => 'PAYPAL',
             'NOVALNET_POSTFINANCE_CARD'     => 'POSTFINANCE_CARD',
             'NOVALNET_POSTFINANCE_EFINANCE' => 'POSTFINANCE',
