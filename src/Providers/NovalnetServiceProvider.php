@@ -156,7 +156,6 @@ class NovalnetServiceProvider extends ServiceProvider
                     // Check if one click shopping enabled
                     $oneClickShopping = $settingsService->getPaymentSettingsValue('one_click_shopping', strtolower($paymentKey));
                     $showOneClickShopping = (!empty($oneClickShopping) && $paymentRequestData['paymentRequestData']['customer']['customer_no'] != 'guest') ? true : false;
-                    $this->getLogger(__METHOD__)->error('show one', $showOneClickShopping);
                     $savedPaymentDetails = '';
                     if(!empty($showOneClickShopping)) {
                         $savedPaymentDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%'.strtolower($paymentKey).'%')->where('customerEmail', '=', $paymentRequestData['paymentRequestData']['customer']['email'])->where('saveOneTimeToken', '=', 1)->whereNull('tokenInfo', 'and', true)->orderBy('id', 'DESC')->limit(3)->get();
@@ -166,7 +165,6 @@ class NovalnetServiceProvider extends ServiceProvider
                             $savedPaymentDetails[$savedPaymentDetailKey]['tokenInfo'] = json_decode($savedPaymentDetail['tokenInfo'], true);
                         }
                     }
-                     $this->getLogger(__METHOD__)->error('saved123', $savedPaymentDetails);
                     // Handle the Direct, Redirect and Form payments content type
                     if(in_array($paymentKey, ['NOVALNET_INVOICE', 'NOVALNET_PREPAYMENT', 'NOVALNET_CASHPAYMENT', 'NOVALNET_MULTIBANCO'])
                     || $paymentService->isRedirectPayment($paymentKey)
@@ -185,12 +183,16 @@ class NovalnetServiceProvider extends ServiceProvider
                             'savedPaymentDetailRemovalUrl' => $paymentService->getPaymentDetailRemovalUrl(),
                         ]);
                         $contentType = 'htmlContent';
-                    } elseif($paymentKey == 'NOVALNET_GUARANTEED_INVOICE' && $showBirthday == true) {
+                    } elseif($paymentKey == 'NOVALNET_GUARANTEED_INVOICE' && $showBirthday == true || $paymentKey == 'NOVALNET_INSTALMENT_INVOICE') {
                         $content = $twig->render('Novalnet::PaymentForm.NovalnetGuaranteedInvoice',
                         [
                             'nnPaymentProcessUrl'   => $paymentService->getProcessPaymentUrl(),
-                            'paymentMopKey'         =>  $paymentKey,
+                            'paymentMopKey'         => $paymentKey,
                             'paymentName'           => $paymentHelper->getCustomizedTranslatedText('template_' . strtolower($paymentKey)),
+                            'showBirthday'          => $showBirthday,
+                            'instalmentNetAmount'   => $paymentRequestData['paymentRequestData']['transaction']['amount'],
+                            'orderCurrency'         => $paymentRequestData['paymentRequestData']['transaction']['currency'],
+                            'instalmentCycles'      => $settingsService->getPaymentSettingsValue('cycle', strtolower($paymentKey));
                         ]);
                         $contentType = 'htmlContent';
                     } elseif($paymentKey == 'NOVALNET_CC') {
