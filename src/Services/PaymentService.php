@@ -1295,7 +1295,7 @@ class PaymentService
                 }
                 $instalmentInfo[$instalment]['tid'] = !empty($insAdditionalInfo[$instalment]['tid']) ?  $insAdditionalInfo[$instalment]['tid'] : '-';
                 $instalmentInfo[$instalment]['payment_status'] = ($instalmentInfo[$instalment]['tid'] != '-') ? $this->paymentHelper->getTranslatedText('paid') : $this->paymentHelper->getTranslatedText('not_paid');
-                $instalmentInfo[$instalment]['future_instalment_date'] = date_format(date_create($instalmentCycle[$instalment]), 'F j, Y');
+                $instalmentInfo[$instalment]['future_instalment_date'] = date_create($instalmentCycle[$instalment]);
             }
 	    $this->getLogger(__METHOD__)->error('ins full', $instalmentInfo);
             return $instalmentInfo;
