@@ -29,7 +29,7 @@
         <div id="nnReinitPaymentMethod-{{order.id}}" class="row con-reinit" style="display:{{display}};">
             <strong class="col-xs-6 col-sm-5"></strong>
             <span class="col-xs-6 col-sm-7">
-                {% if paymentMopKey in ['NOVALNET_SEPA', 'NOVALNET_GUARANTEED_INVOICE', 'NOVALNET_GUARANTEED_SEPA', 'NOVALNET_CC'] %}
+                {% if paymentMopKey in ['NOVALNET_SEPA', 'NOVALNET_GUARANTEED_INVOICE', 'NOVALNET_GUARANTEED_SEPA', 'NOVALNET_CC', 'NOVALNET_INSTALMENT_INVOICE', 'NOVALNET_INSTALMENT_SEPA'] %}
                     <a class="payment-confirmation-btn btn btn-primary" id="nn_form_payment_process">{{trans("Novalnet::Customize.template_novalnet_reinit_payment")}}</a>
                 {% elseif paymentMopKey == 'NOVALNET_GOOGLEPAY' %}
                     {% include "Novalnet::PaymentForm.NovalnetGooglePayButton" %}
@@ -47,9 +47,9 @@
 <div class="modal" tabindex="-1" role="dialog" id="novalnetPaymentForm">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-          {% if paymentMopKey in ['NOVALNET_SEPA', 'NOVALNET_GUARANTEED_SEPA'] %}
+          {% if paymentMopKey in ['NOVALNET_SEPA', 'NOVALNET_GUARANTEED_SEPA', 'NOVALNET_INSTALMENT_SEPA'] %}
             {% include "Novalnet::PaymentForm.NovalnetSepa" %}
-          {% elseif paymentMopKey == 'NOVALNET_GUARANTEED_INVOICE' %}
+          {% if paymentMopKey in ['NOVALNET_GUARANTEED_INVOICE', 'NOVALNET_INSTALMENT_INVOICE'] %}
             {% include "Novalnet::PaymentForm.NovalnetGuaranteedInvoice" %}
           {% elseif paymentMopKey == 'NOVALNET_CC' %}
             {% include "Novalnet::PaymentForm.NovalnetCc" %}
