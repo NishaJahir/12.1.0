@@ -664,7 +664,7 @@ class PaymentService
         ];
         if($paymentResponseData['result']['status'] == 'SUCCESS') {
             // Add the Bank details for the invoice payments
-            if(in_array($paymentResponseData['payment_method'], ['novalnet_invoice', 'novalnet_guaranteed_invoice', 'novalnet_prepayment'])) {
+            if(in_array($paymentResponseData['payment_method'], ['novalnet_invoice', 'novalnet_guaranteed_invoice', 'novalnet_prepayment', 'novalnet_instalment_invoice'])) {
                 $additionalInfo['invoice_account_holder'] = $paymentResponseData['transaction']['bank_details']['account_holder'];
                 $additionalInfo['invoice_iban']           = $paymentResponseData['transaction']['bank_details']['iban'];
                 $additionalInfo['invoice_bic']            = $paymentResponseData['transaction']['bank_details']['bic'];
@@ -673,6 +673,7 @@ class PaymentService
                 $additionalInfo['due_date']               = $paymentResponseData['transaction']['due_date'];
                 $additionalInfo['invoice_ref']            = !empty($paymentResponseData['transaction']['invoice_ref']) ? $paymentResponseData['transaction']['invoice_ref'] : $this->sessionStorage->getPlugin()->getValue('nnInvoiceRef');
             }
+	    
             // Add the store details for the cashpayment
             if($paymentResponseData['payment_method'] == 'novalnet_cashpayment') {
                 $additionalInfo['store_details'] = $paymentResponseData['transaction']['nearest_stores'];
@@ -683,6 +684,10 @@ class PaymentService
                 $additionalInfo['partner_payment_reference'] = $paymentResponseData['transaction']['partner_payment_reference'];
                 $additionalInfo['service_supplier_id']       = $paymentResponseData['transaction']['service_supplier_id'];
             }
+	    // Add the instalment payment details for future instalment
+            if(in_array($paymentResponseData['payment_method'], ['novalnet_instalment_invoice', 'novalnet_instalment_sepa']) && !empty($paymentResponseData['instalment'])) {
+		 $additionalInfo['instalmentInfo'] = json_encode($paymentResponseData['instalment']);      
+	    }
         }
         // Add the type param when the refund was executed
         if(isset($paymentResponseData['refund'])) {
@@ -1253,6 +1258,49 @@ class PaymentService
                 $this->transactionService->removeSavedPaymentDetails($getSavedPaymentDetail); 
             }
         }
+    }
+	
+    /**
+     * Retrieve the Instalment information from the database 
+     *
+     * @param int $orderNo
+     * 
+     * @return array|null
+     */
+    public function getInstalmentInformation($orderNo)
+    {
+	$dataBase = pluginApp(DataBase::class);
+        // Get transaction details from the Novalnet database table
+        $transactionDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%novalnet_instalment%')->where('orderNo', '=', $orderNo)->limit(1)->get();
+        $transactionDetails = json_decode(json_encode($transactionDetails), true);
+	$this->getLogger(__METHOD__)->error('ins', $transactionDetails);
+        if(!empty($transactionDetails)) {
+            $additionalInfo = json_decode($transactionDetails['additionalInfo'], true);
+            $insAdditionalInfo = json_decode($additionalInfo['instalmentInfo'], true);
+
+            $instalmentInfo = [];
+            $totalInstalments = count($insAdditionalInfo['cycle_dates']);
+            $insAdditionalInfo[1]['tid'] = $transactionDetails['tid'];
+            
+            foreach($insAdditionalInfo['cycle_dates'] as $key => $instalmentCycleDate) {
+                $instalmentCycle[$key] = $instalmentCycleDate;
+            }
+            
+            for($instalment=1; $instalment<=$totalInstalments; $instalment++) {
+                if($instalment != $totalInstalments) {
+					$instalmentInfo[$instalment]['cycle_amount'] = number_format($insAdditionalInfo['cycle_amount'] / 100 , 2, ',', '.') .' '. $additionalInfo['currency'];
+                } else {
+                    $cycleAmount = ($transactionDetails['amount'] - ($insAdditionalInfo['cycle_amount'] * ($instalment - 1)));
+                    $instalmentInfo[$instalment]['cycle_amount'] = number_format($cycleAmount / 100 , 2, ',', '.') .' '. $additionalInfo['currency'];
+                }
+                $instalmentInfo[$instalment]['tid'] = !empty($insAdditionalInfo[$instalment]['tid']) ?  $insAdditionalInfo[$instalment]['tid'] : '-';
+                $instalmentInfo[$instalment]['payment_status'] = ($instalmentInfo[$instalment]['tid'] != '-') ? $this->paymentHelper->getTranslatedText('paid') : $this->paymentHelper->getTranslatedText('not_paid');
+                $instalmentInfo[$instalment]['future_instalment_date'] = date_format(date_create($instalmentCycle[$instalment]), 'F j, Y');
+            }
+	    $this->getLogger(__METHOD__)->error('ins full', $instalmentInfo);
+            return $instalmentInfo;
+        }
+        return null;
     }
    
 }
