@@ -112,6 +112,7 @@
         
         {# Instalment Process #}
         {% if paymentMopKey == 'NOVALNET_INSTALMENT_SEPA' %}
+        <script defer src="{{plugin_path('Novalnet')}}/js/novalnetGuaranteedPayment.js"></script>
           <input type="hidden" name="nn_instalment_order_amount" id="nn_instalment_order_amount" value="{{(instalmentNetAmount / 100)}}">
            <input type="hidden" name="nn_instalment_order_currency" id="nn_instalment_order_currency" value="{{orderCurrency}}">
            <div class="row">
