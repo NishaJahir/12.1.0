@@ -88,7 +88,7 @@ abstract class NovalnetPaymentAbstract extends PaymentMethodBaseService
             $isPaymentActive = ($guaranteeStatus == 'normal') ? true : false;
         }
 
-        if($isPaymentActive && in_array($this::PAYMENT_KEY, ['NOVALNET_GUARANTEED_INVOICE', 'NOVALNET_GUARANTEED_SEPA'])) {
+        if($isPaymentActive && in_array($this::PAYMENT_KEY, ['NOVALNET_GUARANTEED_INVOICE', 'NOVALNET_GUARANTEED_SEPA', 'NOVALNET_INSTALMENT_INVOICE', 'NOVALNET_INSTALMENT_SEPA'])) {
             $guaranteeStatus = $this->paymentService->isGuaranteePaymentToBeDisplayed($this->basketRepository, strtolower($this::PAYMENT_KEY));
             $isPaymentActive = ($guaranteeStatus == 'guarantee') ? true : false;
         }
