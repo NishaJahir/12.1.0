@@ -42,7 +42,7 @@ class NovalnetOrderConfirmationDataProvider
         $sessionStorage = pluginApp(FrontendSessionStorageFactoryContract::class);
 
         // Define the variables
-        $transactionComment = $cashpaymentToken = $cashpaymentUrl = '';
+        $transactionComment = $cashpaymentToken = $cashpaymentUrl = $instalmentInfo = '';
 
         if(!empty($order['id'])) {
             // Loads the payments for an order
@@ -82,6 +82,11 @@ class NovalnetOrderConfirmationDataProvider
 
                     // Form the Novalnet transaction comments
                     $transactionComments = $paymentService->formTransactionComments($nnDbTxDetails);
+                    
+                    // Get the instalment information
+                    if(in_array($payment->method['paymentKey'], ['NOVALNET_INSTALMENT_INVOICE', 'NOVALNET_INSTALMENT_SEPA'])) {
+                        $instalmentInfo = $paymentService->getInstalmentInformation($order['id']);
+                    }
                 }
             }
             $transactionComment .= (string) $transactionComments;
@@ -96,7 +101,8 @@ class NovalnetOrderConfirmationDataProvider
                                         'transactionComments' => html_entity_decode($transactionComment),
                                         'cashpaymentToken' => $cashpaymentToken,
                                         'cashpaymentUrl' => $cashpaymentUrl,
-                                        'txStatus' => $nnDbTxDetails['tx_status']
+                                        'txStatus' => $nnDbTxDetails['tx_status'],
+                                        'instalmentInfo' => $instalmentInfo
                                     ]);
     }
 }
