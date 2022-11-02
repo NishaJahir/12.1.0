@@ -88,12 +88,7 @@ class NovalnetPaymentMethodReinitializePaymentDataProvider
                  $ccFormDetails = $paymentService->getCreditCardAuthenticationCallData($basketRepository->load(), strtolower($paymentKey), $invoiceAmount);
                  $ccCustomFields = $paymentService->getCcFormFields();
             }
-            
-            if(in_array($paymentKey, ['NOVALNET_INSTALMENT_INVOICE', 'NOVALNET_INSTALMENT_SEPA'])) {
-                            'instalmentNetAmount'   => $paymentRequestData['paymentRequestData']['transaction']['amount'],
-                            
-                            'instalmentCycles'      => $settingsService->getPaymentSettingsValue('cycle', strtolower($paymentKey))
-            }
+          
             // Get the required details for Google Pay payment
             if($paymentKey == 'NOVALNET_GOOGLEPAY') {
                 // Get the seller name from the shop configuaration
