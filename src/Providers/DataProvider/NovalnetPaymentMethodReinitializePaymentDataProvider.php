@@ -88,6 +88,12 @@ class NovalnetPaymentMethodReinitializePaymentDataProvider
                  $ccFormDetails = $paymentService->getCreditCardAuthenticationCallData($basketRepository->load(), strtolower($paymentKey), $invoiceAmount);
                  $ccCustomFields = $paymentService->getCcFormFields();
             }
+            
+            if(in_array($paymentKey, ['NOVALNET_INSTALMENT_INVOICE', 'NOVALNET_INSTALMENT_SEPA'])) {
+                            'instalmentNetAmount'   => $paymentRequestData['paymentRequestData']['transaction']['amount'],
+                            
+                            'instalmentCycles'      => $settingsService->getPaymentSettingsValue('cycle', strtolower($paymentKey))
+            }
             // Get the required details for Google Pay payment
             if($paymentKey == 'NOVALNET_GOOGLEPAY') {
                 // Get the seller name from the shop configuaration
@@ -127,6 +133,8 @@ class NovalnetPaymentMethodReinitializePaymentDataProvider
                                             'orderLang'   => $paymentRequestData['paymentRequestData']['custom']['lang'],
                                             'countryCode' => $paymentRequestData['paymentRequestData']['customer']['billing']['country_code'],
                                             'orderCurrency'  => $basketRepository->load()->currency,
+                                            'instalmentNetAmount' => $invoiceAmount,
+                                            'instalmentCycles'    => $settingsService->getPaymentSettingsValue('cycle', strtolower($paymentKey))
                                             'googlePayData' => !empty($googlePayData) ? $googlePayData : ''
                                         ]);
         } else {
