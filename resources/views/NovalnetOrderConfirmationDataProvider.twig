@@ -17,5 +17,34 @@
             data-auto-display="true">
     </script>
     {% endif %}
+    
+    {# Display the Instalment summary #}
+    {% if instalmentInfo is not empty and txStatus == 'CONFIRMED' %}
+    <div class="col-12"><strong>{{trans("Novalnet::PaymentMethod.instalment_summary")}}</strong></div>
+    <div class="col-12">       
+        <table class="table table-striped table-hover table-sm nn_instalment_table">
+            <thead>
+              <tr>
+                <th>{{trans("Novalnet::PaymentMethod.serial_no")}}</th>
+                <th>{{trans("Novalnet::PaymentMethod.instalment_future_date")}}</th>
+                <th>{{trans("Novalnet::PaymentMethod.novalnet_tid")}}</th>
+                <th>Status</th>
+                <th>{{trans("Novalnet::PaymentMethod.instalment_amount")}}</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for key, value in instalmentInfo %}
+              <tr>
+                <td>{{key}}</td>
+                <td>{{value.future_instalment_date}}</td>
+                <td>{{value.tid}}</td>
+                <td>{{value.payment_status}}</td>
+                <td>{{value.cycle_amount}}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+    </div>
+    {% endif %}
 </div>
 {% endif %}
