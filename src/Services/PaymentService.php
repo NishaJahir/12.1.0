@@ -1279,7 +1279,7 @@ class PaymentService
             $insAdditionalInfo = json_decode($additionalInfo['instalmentInfo'], true);
 
             $instalmentInfo = [];
-            $totalInstalments = count($insAdditionalInfo['cycle_dates']);
+            $totalInstalments = count(json_decode($insAdditionalInfo['cycle_dates'], true));
             $insAdditionalInfo[1]['tid'] = $transactionDetails['tid'];
             
             foreach($insAdditionalInfo['cycle_dates'] as $key => $instalmentCycleDate) {
