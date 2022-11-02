@@ -143,7 +143,7 @@ abstract class NovalnetPaymentAbstract extends PaymentMethodBaseService
      */
     public function getFee(): float
     {
-        return 0.00;
+        return 1.00;
     }
 
     /**
