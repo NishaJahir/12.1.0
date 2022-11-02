@@ -1277,16 +1277,15 @@ class PaymentService
         if(!empty($transactionDetails)) {
             $additionalInfo = json_decode($transactionDetails['additionalInfo'], true);
             $insAdditionalInfo = json_decode($additionalInfo['instalmentInfo'], true);
-	    $instalmentCycleDates = json_decode($insAdditionalInfo['cycle_dates'], true);
 		
             $this->getLogger(__METHOD__)->error('ins info11', $insAdditionalInfo);
 	    $this->getLogger(__METHOD__)->error('dates11', $instalmentCycleDates);
 		
             $instalmentInfo = [];
-            $totalInstalments = count($instalmentCycleDates);
+            $totalInstalments = count($insAdditionalInfo['cycle_dates']);
             $insAdditionalInfo[1]['tid'] = $transactionDetails['tid'];
             
-            foreach($instalmentCycleDates as $key => $instalmentCycleDate) {
+            foreach($insAdditionalInfo['cycle_dates'] as $key => $instalmentCycleDate) {
                 $instalmentCycle[$key] = $instalmentCycleDate;
             }
             
