@@ -36,7 +36,7 @@
             {% for key, value in instalmentInfo %}
               <tr>
                 <td>{{key}}</td>
-                <td>{{value.future_instalment_date}}</td>
+                <td>{{value.future_instalment_date|date("F j, Y")}}</td>
                 <td>{{value.tid}}</td>
                 <td>{{value.payment_status}}</td>
                 <td>{{value.cycle_amount}}</td>
