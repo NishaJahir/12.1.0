@@ -181,6 +181,9 @@ class NovalnetServiceProvider extends ServiceProvider
                             'showOneClickShopping'         => $showOneClickShopping,
                             'savedPaymentDetails'          => $savedPaymentDetails,
                             'savedPaymentDetailRemovalUrl' => $paymentService->getPaymentDetailRemovalUrl(),
+                            'instalmentNetAmount'          => $paymentRequestData['paymentRequestData']['transaction']['amount'],
+                            'orderCurrency'                => $paymentRequestData['paymentRequestData']['transaction']['currency'],
+                            'instalmentCycles'             => $settingsService->getPaymentSettingsValue('cycle', strtolower($paymentKey))
                         ]);
                         $contentType = 'htmlContent';
                     } elseif($paymentKey == 'NOVALNET_GUARANTEED_INVOICE' && $showBirthday == true || $paymentKey == 'NOVALNET_INSTALMENT_INVOICE') {
