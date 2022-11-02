@@ -737,9 +737,13 @@ class PaymentService
                     }
                     // Get the billing and shipping details
                     $billingShippingDetails = $this->paymentHelper->getBillingShippingDetails($billingAddress, $shippingAddress);
-                    // Set the minimum guaranteed amount
+                    // By default, the guaranteed payment minimum order amount
+                    $minimumGuaranteedAmount = strpos($paymentKey, 'instalment') ? 1998 : 999;
+                    // Get the minimum guaranteed amount from the configuration
                     $configuredMinimumGuaranteedAmount = $this->settingsService->getPaymentSettingsValue('minimum_order_amount', $paymentKey);
-                    $minimumGuaranteedAmount = !empty($configuredMinimumGuaranteedAmount) ? $configuredMinimumGuaranteedAmount : 999;
+                    if((!empty($configuredMinimumGuaranteedAmount) && $configuredMinimumGuaranteedAmount >= $minimumGuaranteedAmount)) {
+						$minimumGuaranteedAmount = $configuredMinimumGuaranteedAmount;
+					}
                     // Get the basket total amount
                     $basketAmount = !empty($basket->basketAmount) ? $this->paymentHelper->convertAmountToSmallerUnit($basket->basketAmount) : $this->sessionStorage->getPlugin()->getValue('nnOrderAmount');
                     // First, we check the billing and shipping addresses are matched
@@ -751,6 +755,19 @@ class PaymentService
                     && in_array($billingShippingDetails['billing']['country_code'], $this->getEuropeanRegionCountryCodes())))
                     && (!empty($basket->currency) && $basket->currency == 'EUR')
                     && (!empty($minimumGuaranteedAmount) &&  (int) $minimumGuaranteedAmount <= (int) $basketAmount)) {
+                        // If it is instalment payment check the every cycle amount is less than 999 cents
+                        if(strpos($paymentKey, 'instalment')) {
+							$instalmentCycles = $this->settingsService->getPaymentSettingsValue('cycle', $paymentKey);
+							if(!empty($instalmentCycles)) {
+								// Looping in the configured cycles and checking each of the cycles
+								foreach($instalmentCycles as $key => $value) {
+									$instalmentCycleAmount = ($basketAmount / $value);
+									if($instalmentCycleAmount < 999) {
+										return 'error';
+									}
+								}
+							}
+						}
                         // If the guaranteed conditions are met, display the guaranteed payments
                         return 'guarantee';
                     }
