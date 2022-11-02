@@ -58,6 +58,7 @@
            {% endif %}
            
            {# Instalment Process #}
+           {% if paymentMopKey == 'NOVALNET_INSTALMENT_INVOICE' %}
            <input type="hidden" name="nn_instalment_order_amount" id="nn_instalment_order_amount" value="{{(instalmentNetAmount / 100)}}">
            <input type="hidden" name="nn_instalment_order_currency" id="nn_instalment_order_currency" value="{{orderCurrency}}">
            <div class="row">
@@ -91,7 +92,8 @@
                     </thead>
                     <tbody id="nn_instalment_cycle_information"></tbody>
                 </table>
-           </div>   
+           </div>
+           {% endif %}
     </div>
 
     <div class="modal-footer">
