@@ -176,7 +176,6 @@ class PaymentController extends Controller
     {
         // Get the payment form post data
         $paymentRequestPostData = $this->request->all();
-        $this->getLogger(__METHOD__)->error('Post data', $paymentRequestPostData);
         // Get the order amount
         $orderAmount = !empty($paymentRequestPostData['nn_order_amount']) ? $paymentRequestPostData['nn_order_amount'] : 0;
         // Get the payment request params
@@ -212,7 +211,7 @@ class PaymentController extends Controller
                 $this->sessionStorage->getPlugin()->setValue('nnDoRedirect', $paymentRequestPostData['nn_cc3d_redirect']);
             }
         }
-        if($paymentRequestPostData['nn_payment_key'] == 'NOVALNET_INSTALMENT_INVOICE') {
+        if(in_array($paymentRequestPostData['nn_payment_key'], ['NOVALNET_INSTALMENT_INVOICE', 'NOVALNET_INSTALMENT_SEPA'])) {
               $paymentRequestData['paymentRequestData']['instalment']['cycles'] = $paymentRequestPostData['nn_instalment_cycle']; 
         }
         // Setting up the wallet token for the Google pay payment
