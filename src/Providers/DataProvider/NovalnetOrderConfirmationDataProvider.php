@@ -83,7 +83,10 @@ class NovalnetOrderConfirmationDataProvider
                     // Form the Novalnet transaction comments
                     $transactionComments = $paymentService->formTransactionComments($nnDbTxDetails);
                     
-                    
+                    // Get the instalment information
+                    if(in_array($payment->method['paymentKey'], ['NOVALNET_INSTALMENT_INVOICE', 'NOVALNET_INSTALMENT_SEPA']) && txStatus == 'CONFIRMED') {
+                        $instalmentInfo = $paymentService->getInstalmentInformation($order['id']);
+                    }
                 }
             }
             $transactionComment .= (string) $transactionComments;
@@ -99,7 +102,7 @@ class NovalnetOrderConfirmationDataProvider
                                         'cashpaymentToken' => $cashpaymentToken,
                                         'cashpaymentUrl' => $cashpaymentUrl,
                                         'txStatus' => $nnDbTxDetails['tx_status'],
-                                        
+                                        'instalmentInfo' => $instalmentInfo
                                     ]);
     }
 }
