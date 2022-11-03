@@ -110,8 +110,10 @@ class NovalnetPaymentMethodReinitializePaymentDataProvider
           }
 
         $paymentService->logger('tx', $transactionDetails);
+        $paymentService->logger('nis', $paymentKey);
         // If the Novalnet payments are rejected do the reinitialize payment
         if(strpos($paymentKey, 'NOVALNET') !== false && ((!empty($transactionDetails['tx_status']) && !in_array($transactionDetails['tx_status'], ['PENDING', 'ON_HOLD', 'CONFIRMED', 'DEACTIVATED'])) || empty($transactionDetails['tx_status']))) {
+                $paymentService->logger('called if', $paymentKey);
             return $twig->render('Novalnet::NovalnetPaymentMethodReinitializePaymentDataProvider',
                                         [
                                             'order' => $order,
@@ -134,6 +136,7 @@ class NovalnetPaymentMethodReinitializePaymentDataProvider
                                             'googlePayData' => !empty($googlePayData) ? $googlePayData : ''
                                         ]);
         } else {
+            $paymentService->logger('called else', $paymentKey);
             return '';
         }
     }
