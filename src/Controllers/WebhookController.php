@@ -590,7 +590,9 @@ class WebhookController extends Controller
                 }
             }
             
-            $instalmentInfo = $this->novalnetPaymentGateway->getInstalmentInfoFromDb($this->eventData['transaction']['order_no']);
+            $instalmentInfo = $this->paymentService->getInstalmentInformation($this->eventData['transaction']['order_no']);
+	    
+            $this->getLogger(__METHOD__)->error('cal ins', $instalmentInfo);
             
             $webhookComments .= $nextSepaInstalmentMsg;
             // Insert the refund details into Novalnet DB
