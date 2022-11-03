@@ -143,7 +143,7 @@ abstract class NovalnetPaymentAbstract extends PaymentMethodBaseService
      */
     public function getFee(): float
     {
-        return 1.00;
+        return 0.00;
     }
 
     /**
@@ -190,7 +190,7 @@ abstract class NovalnetPaymentAbstract extends PaymentMethodBaseService
      */
     public function isSwitchableTo($orderId = null): bool
     {
-        if($orderId > 0 && $this->isActive() == true) {
+        if($orderId > 0) {
             return true;
         }
         return false;
