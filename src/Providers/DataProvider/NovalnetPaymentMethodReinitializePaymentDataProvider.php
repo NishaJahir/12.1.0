@@ -109,6 +109,7 @@ class NovalnetPaymentMethodReinitializePaymentDataProvider
             $showBirthday = ((!isset($paymentRequestData['paymentRequestData']['customer']['billing']['company']) && !isset($paymentRequestData['paymentRequestData']['customer']['birth_date'])) || (isset($paymentRequestData['paymentRequestData']['customer']['birth_date']) && time() < strtotime('+18 years', strtotime($paymentRequestData['paymentRequestData']['customer']['birth_date'])))) ? true : false;
           }
 
+        $paymentService->logger('tx', $transactionDetails);
         // If the Novalnet payments are rejected do the reinitialize payment
         if(strpos($paymentKey, 'NOVALNET') !== false && ((!empty($transactionDetails['tx_status']) && !in_array($transactionDetails['tx_status'], ['PENDING', 'ON_HOLD', 'CONFIRMED', 'DEACTIVATED'])) || empty($transactionDetails['tx_status']))) {
             return $twig->render('Novalnet::NovalnetPaymentMethodReinitializePaymentDataProvider',
