@@ -128,7 +128,7 @@ class TransactionService
             $instalmentInfo[$insCycleCount]['tid'] = $requestPostData['event']['tid'];
 	    $orderDetails['instalmentInfo'] = json_encode($instalmentInfo); 
 	}
-	$this->getLogger(__METHOD_)->error('updated ins', $orderDetails);
+	$this->getLogger(__METHOD__)->error('updated ins', $orderDetails);
         $database->save($orderDetails);
     }
 }
