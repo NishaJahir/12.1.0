@@ -23,6 +23,9 @@
     {% set display = "none" %}
 {% endif %}
 
+{{display}}
+{{paymentMopKey}}
+
 {# Check if it is Novalnet Payments then dispay the Reinit payment button in the order confirmation page #}
 {% if 'NOVALNET' in paymentMopKey %}
     {% if services.template.isCurrentTemplate('tpl.confirmation') %}
