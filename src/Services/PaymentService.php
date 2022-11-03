@@ -639,6 +639,7 @@ class PaymentService
             'save_onetime_token' => !empty($paymentResponseData['transaction']['payment_data']['token']) ? 1 : 0,
             'token_info'         => !empty($paymentResponseData['transaction']['payment_data']) ? json_encode($paymentResponseData['transaction']['payment_data']) : '',
             'additional_info'    => $additionalInfo ?? 0,
+	    'instalment_info'    => !empty($paymentResponseData['instalment']) ? json_encode($paymentResponseData['instalment']) : ''; 
         ];
         if(in_array($transactionData['payment_name'], ['NOVALNET_INVOICE', 'NOVALNET_PREPAYMENT', 'NOVALNET_MULTIBANCO']) ||  (in_array($transactionData['payment_name'], ['NOVALNET_PAYPAL', 'NOALNET_PRZELEWY24']) && in_array($paymentResponseData['transaction']['status'], ['PENDING', 'ON_HOLD'])) || $paymentResponseData['result']['status'] != 'SUCCESS') {
             $transactionData['callback_amount'] = 0;
@@ -684,10 +685,6 @@ class PaymentService
                 $additionalInfo['partner_payment_reference'] = $paymentResponseData['transaction']['partner_payment_reference'];
                 $additionalInfo['service_supplier_id']       = $paymentResponseData['transaction']['service_supplier_id'];
             }
-	    // Add the instalment payment details for future instalment
-            if(in_array($paymentResponseData['payment_method'], ['novalnet_instalment_invoice', 'novalnet_instalment_sepa']) && !empty($paymentResponseData['instalment'])) {
-		 $additionalInfo['instalmentInfo'] = json_encode($paymentResponseData['instalment']);      
-	    }
         }
         // Add the type param when the refund was executed
         if(isset($paymentResponseData['refund'])) {
@@ -1271,15 +1268,13 @@ class PaymentService
     {
 	$dataBase = pluginApp(DataBase::class);
         // Get transaction details from the Novalnet database table
-        $transactionDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%novalnet_instalment%')->where('orderNo', '=', $orderNo)->limit(1)->get();
+        $transactionDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%novalnet_instalment%')->where('orderNo', '=', $orderNo)->whereNull('instalmentInfo', 'and', true)->limit(1)->get();
         $transactionDetails = json_decode(json_encode($transactionDetails[0]), true);
 	$this->getLogger(__METHOD__)->error('ins11', $transactionDetails);
         if(!empty($transactionDetails)) {
-            $additionalInfo = json_decode($transactionDetails['additionalInfo'], true);
-            $insAdditionalInfo = json_decode($additionalInfo['instalmentInfo'], true);
+            $insAdditionalInfo = json_decode($transactionDetails['instalmentInfo'], true);
 		
             $this->getLogger(__METHOD__)->error('ins info11', $insAdditionalInfo);
-	    $this->getLogger(__METHOD__)->error('dates11', $instalmentCycleDates);
 		
             $instalmentInfo = [];
             $totalInstalments = count($insAdditionalInfo['cycle_dates']);
