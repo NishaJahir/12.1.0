@@ -120,7 +120,7 @@ class TransactionService
     public function updateInstalmentInformation($orderNo, $requestPostData)
     {
         $database = pluginApp(DataBase::class);
-        $orderDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%novalnet_instalment%')->where('orderNo', '=', $orderNo)->whereNull('instalmentInfo', 'and', true)->limit(1)->get();
+        $orderDetails = $database->query(TransactionLog::class)->where('paymentName', 'like', '%novalnet_instalment%')->where('orderNo', '=', $orderNo)->whereNull('instalmentInfo', 'and', true)->limit(1)->get();
         $orderDetails = json_decode(json_encode($orderDetails[0]), true);	 
 	if(!empty($orderDetails)) {
             $instalmentInfo = json_decode($orderDetails['instalmentInfo'], true);	
