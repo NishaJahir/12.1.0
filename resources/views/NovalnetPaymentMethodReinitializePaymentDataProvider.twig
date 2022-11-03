@@ -1,6 +1,8 @@
 {# Load the css #}
 <link rel="stylesheet" href="{{plugin_path('Novalnet')}}/css/novalnetUi.css">
 
+<input type="text" name="test1" id="test1">
+
 {# Initialize the payment Id and payment status #}
 {% set paymentId = 0 %}
 {% set paidStatus = '' %}
@@ -23,8 +25,11 @@
     {% set display = "none" %}
 {% endif %}
 
+<input type="text" name="test" id="test">
+
 {{display}}
 {{paymentMopKey}}
+
 
 {# Check if it is Novalnet Payments then dispay the Reinit payment button in the order confirmation page #}
 {% if 'NOVALNET' in paymentMopKey %}
