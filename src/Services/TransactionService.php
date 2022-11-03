@@ -46,6 +46,7 @@ class TransactionService
             $transaction->saveOneTimeToken    = $transactionData['save_onetime_token'];
             $transaction->tokenInfo           = $transactionData['token_info'];
             $transaction->additionalInfo      = !empty($transactionData['additional_info']) ? $transactionData['additional_info'] : '0';
+	    $transaction->instalmentInfo      = $transactionData['instalment_info'];
             
             $this->getLogger(__METHOD__)->error('save db', $transaction);
             $database->save($transaction);
@@ -119,14 +120,13 @@ class TransactionService
     public function updateInstalmentInformation($orderNo, $requestPostData)
     {
         $database = pluginApp(DataBase::class);
-        $orderDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%novalnet_instalment%')->where('orderNo', '=', $orderNo)->limit(1)->get();
+        $orderDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%novalnet_instalment%')->where('orderNo', '=', $orderNo)->whereNull('instalmentInfo', 'and', true)->limit(1)->get();
         $orderDetails = json_decode(json_encode($orderDetails[0]), true);	 
 	if(!empty($orderDetails)) {
-	    $additionalInfo = json_decode($orderDetails['additionalInfo'], true);
-            $insAdditionalInfo = json_decode($additionalInfo['instalmentInfo'], true);	
+            $instalmentInfo = json_decode($orderDetails['instalmentInfo'], true);	
 	    $insCycleCount = $requestPostData['instalment']['cycles_executed'];
-            $insAdditionalInfo[$insCycleCount]['tid'] = $requestPostData['event']['tid'];
-	    $orderDetails['additionalInfo']['instalmentInfo'] = json_encode($insAdditionalInfo); 
+            $instalmentInfo[$insCycleCount]['tid'] = $requestPostData['event']['tid'];
+	    $orderDetails['instalmentInfo'] = json_encode($instalmentInfo); 
 	}
 	$this->getLogger(__METHOD_)->error('updated ins', $orderDetails);
         $database->save($orderDetails);
