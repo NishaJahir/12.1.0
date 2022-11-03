@@ -178,7 +178,7 @@ class WebhookController extends Controller
                 case 'CHARGEBACK':
                     return $this->handleChargeback();
                 case 'INSTALMENT':
-					return $this->handleInstalment();
+		    return $this->handleInstalment();
                 case 'PAYMENT_REMINDER':
                 case 'COLLECTION':
                     return $this->handlePaymentNotifications();
@@ -573,7 +573,7 @@ class WebhookController extends Controller
     *
     * @return string
     */
-    public function handleNnInstalment()
+    public function handleInstalment()
     {
         if($this->eventData['transaction']['status'] == 'CONFIRMED' && !empty($this->eventData['instalment']['cycles_executed'])) {
             $additionalInstalmentMsg = $nextSepaInstalmentMsg = '';
