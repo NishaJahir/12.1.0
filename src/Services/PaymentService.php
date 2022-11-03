@@ -639,7 +639,7 @@ class PaymentService
             'save_onetime_token' => !empty($paymentResponseData['transaction']['payment_data']['token']) ? 1 : 0,
             'token_info'         => !empty($paymentResponseData['transaction']['payment_data']) ? json_encode($paymentResponseData['transaction']['payment_data']) : '',
             'additional_info'    => $additionalInfo ?? 0,
-	    'instalment_info'    => !empty($paymentResponseData['instalment']) ? json_encode($paymentResponseData['instalment']) : ''; 
+	    'instalment_info'    => !empty($paymentResponseData['instalment']) ? json_encode($paymentResponseData['instalment']) : ''
         ];
         if(in_array($transactionData['payment_name'], ['NOVALNET_INVOICE', 'NOVALNET_PREPAYMENT', 'NOVALNET_MULTIBANCO']) ||  (in_array($transactionData['payment_name'], ['NOVALNET_PAYPAL', 'NOALNET_PRZELEWY24']) && in_array($paymentResponseData['transaction']['status'], ['PENDING', 'ON_HOLD'])) || $paymentResponseData['result']['status'] != 'SUCCESS') {
             $transactionData['callback_amount'] = 0;
