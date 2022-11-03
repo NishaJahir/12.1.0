@@ -98,7 +98,6 @@ class TransactionService
      */
     public function removeSavedPaymentDetails($requestPostData) 
     {
-        try {
             $database = pluginApp(DataBase::class);
             $orderDetails = $database->query(TransactionLog::class)->where('tid', '=', $requestPostData['tid'])->get();
             foreach($orderDetails as $orderDetail) {
@@ -106,10 +105,30 @@ class TransactionService
                 $orderDetail->tokenInfo = '';    
             }
             $database->save($orderDetail);
-		    $updatedView = $database->query(TransactionLog::class)->where('tid', '=', $requestPostData['tid'])->get();
-		    $this->getLogger(__METHOD__)->error('After removed the data', $updatedView);
-        } catch (\Exception $e) {
-            $this->getLogger(__METHOD__)->error('Removal of payment token failed!.', $e);
-        }
+    }
+	
+    /**
+     * Update the Instalment cycle TID
+     *
+     * @param string $key
+     * @param mixed  $value
+     * @param array $transactionData
+     *
+     * return none
+     */
+    public function updateInstalmentInformation($orderNo, $requestPostData)
+    {
+        $database = pluginApp(DataBase::class);
+        $orderDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%novalnet_instalment%')->where('orderNo', '=', $orderNo)->limit(1)->get();
+        $orderDetails = json_decode(json_encode($orderDetails[0]), true);	 
+	if(!empty($orderDetails)) {
+	    $additionalInfo = json_decode($orderDetails['additionalInfo'], true);
+            $insAdditionalInfo = json_decode($additionalInfo['instalmentInfo'], true);	
+	    $insCycleCount = $requestPostData['instalment']['cycles_executed'];
+            $insAdditionalInfo[$insCycleCount]['tid'] = $requestPostData['event']['tid'];
+	    $orderDetails['additionalInfo']['instalmentInfo'] = json_encode($insAdditionalInfo); 
+	}
+	$this->getLogger(__METHOD_)->error('updated ins', $orderDetails);
+        $database->save($orderDetails);
     }
 }
