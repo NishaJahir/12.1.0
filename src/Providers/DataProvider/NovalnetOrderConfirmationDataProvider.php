@@ -84,7 +84,7 @@ class NovalnetOrderConfirmationDataProvider
                     $transactionComments = $paymentService->formTransactionComments($nnDbTxDetails);
                     
                     // Get the instalment information
-                    if(in_array($payment->method['paymentKey'], ['NOVALNET_INSTALMENT_INVOICE', 'NOVALNET_INSTALMENT_SEPA']) && txStatus == 'CONFIRMED') {
+                    if(in_array($payment->method['paymentKey'], ['NOVALNET_INSTALMENT_INVOICE', 'NOVALNET_INSTALMENT_SEPA']) && $txStatus == 'CONFIRMED') {
                         $instalmentInfo = $paymentService->getInstalmentInformation($order['id']);
                     }
                 }
