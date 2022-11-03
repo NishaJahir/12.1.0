@@ -177,6 +177,8 @@ class WebhookController extends Controller
                     return $this->handleTransactionCredit();
                 case 'CHARGEBACK':
                     return $this->handleChargeback();
+                case 'INSTALMENT':
+					return $this->handleInstalment();
                 case 'PAYMENT_REMINDER':
                 case 'COLLECTION':
                     return $this->handlePaymentNotifications();
@@ -564,6 +566,42 @@ class WebhookController extends Controller
         $this->paymentHelper->createPlentyPayment($this->eventData);
         $this->sendWebhookMail($webhookComments);
         return $this->renderTemplate($webhookComments);
+    }
+    
+    /**
+    * Handling the Instalment payment execution
+    *
+    * @return string
+    */
+    public function handleNnInstalment()
+    {
+        if($this->eventData['transaction']['status'] == 'CONFIRMED' && !empty($this->eventData['instalment']['cycles_executed'])) {
+            $additionalInstalmentMsg = $nextSepaInstalmentMsg = '';
+            
+            $webhookComments = sprintf($this->paymentHelper->getTranslatedText('webhook_instalment_payment_execution', $this->orderLanguage), $this->parentTid, sprintf('%0.2f', ($this->eventData['instalment']['cycle_amount']/100)), $this->eventData['transaction']['currency'], date('d.m.Y'), date('H:i:s'), $this->eventTid);
+            
+            
+            if(empty($this->eventData['instalment']['prepaid'])) {
+                if($this->eventData['transaction']['payment_type'] == 'INSTALMENT_INVOICE') {
+                    $additionalInstalmentMsg = $this->paymentService->getBankDetailsInformation($this->eventData);
+                } else {
+                    $additionalInstalmentMsg = sprintf($this->paymentHelper->getTranslatedText('webhook_next_instalment_sepa_message', $this->orderLanguage), sprintf('%0.2f', ($this->eventData['transaction']['amount']/100)), $this->eventData['transaction']['currency']);
+                    $nextSepaInstalmentMsg = $additionalInstalmentMsg;
+                }
+            }
+            
+            $instalmentInfo = $this->novalnetPaymentGateway->getInstalmentInfoFromDb($this->eventData['transaction']['order_no']);
+            
+            $webhookComments .= $nextSepaInstalmentMsg;
+            // Insert the refund details into Novalnet DB
+			$this->paymentService->insertPaymentResponse($this->eventData);
+            // Send mail notification to customer regarding the new instalment creation
+            //~ $this->sendInstalmentMailNotification($instalmentInfo, $additionalInstalmentMsg);
+            // Create the payment to the plenty order
+			$this->paymentHelper->createPlentyPayment($this->eventData);
+			$this->sendWebhookMail($webhookComments);
+			return $this->renderTemplate($webhookComments);
+        }
     }
 
     /**
