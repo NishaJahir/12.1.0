@@ -25,6 +25,7 @@ use Plenty\Modules\Plugin\DataBase\Contracts\Model;
  * @property int     $saveOneTimeToken
  * @property array   $tokenInfo
  * @property array   $additionalInfo
+ * @property array   $instalmentInfo
  *
  * @package Novalnet\Models
  */
@@ -42,6 +43,7 @@ class TransactionLog extends Model
     public $saveOneTimeToken;
     public $tokenInfo;
     public $additionalInfo;
+    public $instalmentInfo;
 
     /**
      * Returns table name to create during build
