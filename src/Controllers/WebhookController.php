@@ -178,7 +178,9 @@ class WebhookController extends Controller
                 case 'CHARGEBACK':
                     return $this->handleChargeback();
                 case 'INSTALMENT':
-		    return $this->handleInstalment();
+            return $this->handleInstalment();
+             case 'INSTALMENT_CANCEL':
+                    return $this->handleInstalmentCancel();
                 case 'PAYMENT_REMINDER':
                 case 'COLLECTION':
                     return $this->handlePaymentNotifications();
@@ -417,14 +419,10 @@ class WebhookController extends Controller
         $this->eventData['transaction']['currency'] = $this->orderDetails->currency;
             $webhookComments = sprintf($this->paymentHelper->getTranslatedText('webhook_transaction_cancellation', $this->orderLanguage), date('d.m.Y'), date('H:i:s'));
         }
+        
         // Insert the updated transaction details into Novalnet DB
         $this->paymentService->insertPaymentResponse($this->eventData);
-        // Booking Message
-        $this->eventData['bookingText'] = $webhookComments;
-        // Create the payment to the plenty order
-        $this->paymentHelper->createPlentyPayment($this->eventData);
-        $this->sendWebhookMail($webhookComments);
-        return $this->renderTemplate($webhookComments);
+        return $this->webhookFinalprocess($webhookComments, $this->eventData);
     }
 
     /**
@@ -441,6 +439,7 @@ class WebhookController extends Controller
                 $webhookComments = sprintf($this->paymentHelper->getTranslatedText('webhook_transaction_cancellation', $this->orderLanguage), date('d.m.Y'), date('H:i:s'));
             } else {
                 if(in_array($this->eventData['transaction']['status'], ['ON_HOLD', 'CONFIRMED'])) {
+                    
                     $webhookComments = sprintf($this->paymentHelper->getTranslatedText('webhook_update_confirmation_text', $this->orderLanguage), $this->parentTid, sprintf('%0.2f', ($this->eventData['transaction']['amount']/100)) , $this->eventData['transaction']['currency'], date('d.m.Y'), date('H:i:s'));
                     // If the transaction status is On-Hold
                     if($this->eventData['transaction']['status'] == 'ON_HOLD') {
@@ -450,14 +449,7 @@ class WebhookController extends Controller
             }
             // Insert the updated transaction details into Novalnet DB
             $this->paymentService->insertPaymentResponse($this->eventData);
-
-            // Booking Message
-            $this->eventData['bookingText'] = $webhookComments;
-
-            // Create the payment to the plenty order
-            $this->paymentHelper->createPlentyPayment($this->eventData);
-
-            return $this->renderTemplate($webhookComments);
+            return $this->webhookFinalprocess($webhookComments, $this->eventData);
         } else { // Due Date and Amount Update process
             // Due date update text
             $dueDateUpdateMessage = sprintf($this->paymentHelper->getTranslatedText('webhook_duedate_update_message', $this->orderLanguage), sprintf('%0.2f', ($this->eventData['transaction']['amount']/100)) , $this->eventData['transaction']['currency'], $this->eventData['transaction']['due_date']);
@@ -499,12 +491,7 @@ class WebhookController extends Controller
             $this->eventData['refund'] = $refundStatus;
             // Insert the refund transaction details into Novalnet DB
             $this->paymentService->insertPaymentResponse($this->eventData);
-            // Booking Message
-            $this->eventData['bookingText'] = $webhookComments;
-            // Create the payment to the plenty order
-            $this->paymentHelper->createPlentyPayment($this->eventData);
-            $this->sendWebhookMail($webhookComments);
-            return $this->renderTemplate($webhookComments);
+            return $this->webhookFinalprocess($webhookComments, $this->eventData);
         }
     }
 
@@ -526,16 +513,11 @@ class WebhookController extends Controller
             $this->eventData['unaccountable'] = 1;
         }
         $this->eventData['credit'] = 1;
-        // Booking Message
-        $this->eventData['bookingText'] = $webhookComments;
         $this->eventData['mop'] = $this->orderDetails->mopId;
         $orderTotalAmount = $this->orderDetails->orderTotalAmount;
         // Insert the refund details into Novalnet DB
         $this->paymentService->insertPaymentResponse($this->eventData, $this->parentTid, 0, $orderTotalAmount);
-        // Create the payment to the plenty order
-        $this->paymentHelper->createPlentyPayment($this->eventData);
-        $this->sendWebhookMail($webhookComments);
-        return $this->renderTemplate($webhookComments);
+        return $this->webhookFinalprocess($webhookComments, $this->eventData);
     }
 
     /**
@@ -559,13 +541,8 @@ class WebhookController extends Controller
         $refundStatus = $this->paymentService->getRefundStatus($this->eventData['transaction']['order_no'], $this->orderDetails->orderTotalAmount, $this->eventData['transaction']['amount']);
         // Set the refund status it Partial or Full refund
         $this->eventData['refund'] = $refundStatus;
-        // Booking Message
-        $this->eventData['bookingText'] = $webhookComments;
         $this->eventData['mop'] = $this->orderDetails->mopId;
-        // Create the payment to the plenty order
-        $this->paymentHelper->createPlentyPayment($this->eventData);
-        $this->sendWebhookMail($webhookComments);
-        return $this->renderTemplate($webhookComments);
+        return $this->webhookFinalprocess($webhookComments, $this->eventData);
     }
     
     /**
@@ -577,10 +554,9 @@ class WebhookController extends Controller
     {
         if($this->eventData['transaction']['status'] == 'CONFIRMED' && !empty($this->eventData['instalment']['cycles_executed'])) {
             $additionalInstalmentMsg = $nextSepaInstalmentMsg = '';
-            
             $webhookComments = sprintf($this->paymentHelper->getTranslatedText('webhook_instalment_payment_execution', $this->orderLanguage), $this->parentTid, sprintf('%0.2f', ($this->eventData['instalment']['cycle_amount']/100)), $this->eventData['transaction']['currency'], date('d.m.Y'), date('H:i:s'), $this->eventTid);
-            
-            
+            // Updaet the Instalment cycle information
+            $this->transactionService->updateInstalmentInformation($this->eventData['transaction']['order_no'], $this->eventData);
             if(empty($this->eventData['instalment']['prepaid'])) {
                 if($this->eventData['transaction']['payment_type'] == 'INSTALMENT_INVOICE') {
                     $additionalInstalmentMsg = $this->paymentService->getBankDetailsInformation($this->eventData);
@@ -589,21 +565,25 @@ class WebhookController extends Controller
                     $nextSepaInstalmentMsg = $additionalInstalmentMsg;
                 }
             }
-            
             $instalmentInfo = $this->paymentService->getInstalmentInformation($this->eventData['transaction']['order_no']);
-	    
             $this->getLogger(__METHOD__)->error('cal ins', $instalmentInfo);
-            
             $webhookComments .= $nextSepaInstalmentMsg;
-            // Insert the refund details into Novalnet DB
-			$this->paymentService->insertPaymentResponse($this->eventData);
-            // Send mail notification to customer regarding the new instalment creation
-            //~ $this->sendInstalmentMailNotification($instalmentInfo, $additionalInstalmentMsg);
-            // Create the payment to the plenty order
-			$this->paymentHelper->createPlentyPayment($this->eventData);
-			$this->sendWebhookMail($webhookComments);
-			return $this->renderTemplate($webhookComments);
+            // Insert the instalment details into Novalnet DB
+            $this->paymentService->insertPaymentResponse($this->eventData);
+            return $this->webhookFinalprocess($webhookComments, $this->eventData);
         }
+    }
+    
+     
+    /**
+     * Handling the Instalment cancelation
+     *
+     * @return string
+     */
+    public function handleInstalmentCancel()
+    {
+        $webhookComments = sprintf($this->paymentHelper->getTranslatedText('webhook_instalment_cancel', $this->orderLanguage), $this->parentTid, date('d.m.Y'), date('H:i:s'));
+        return $this->webhookFinalprocess($webhookComments, $this->eventData);
     }
 
     /**
@@ -620,12 +600,27 @@ class WebhookController extends Controller
             $webhookComments = sprintf($this->paymentHelper->getTranslatedText('webhook_collection_submission', $this->orderLanguage), $this->eventData['collection']['reference']);
         }
         $this->eventData['unaccountable'] = 1;
+        return $this->webhookFinalprocess($webhookComments, $this->eventData);
+    }
+    
+     /**
+     * Performs final webhook process
+     *
+     * @param string  $webhookMsg
+     * @param array  $eventData
+     * 
+     * @return string
+     */
+    public function webhookFinalprocess($webhookMsg, $eventData) 
+    {
         // Booking Message
-        $this->eventData['bookingText'] = $webhookComments;
+        $this->eventData['bookingText'] = $webhookMsg;
         // Create the payment to the plenty order
-        $this->paymentHelper->createPlentyPayment($this->eventData);
-        $this->sendWebhookMail($webhookComments);
-        return $this->renderTemplate($webhookComments);
+        $this->paymentHelper->createPlentyPayment($eventData);
+        // Send the mail to merchant regarding the webhook execution
+        $this->sendWebhookMail($webhookMsg);
+        // Render the webhook message
+        return $this->renderTemplate($webhookMsg);
     }
     
     /**
