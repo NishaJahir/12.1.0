@@ -85,7 +85,8 @@ class NovalnetOrderConfirmationDataProvider
                     
                     // Get the instalment information
                     if(in_array($payment->method['paymentKey'], ['NOVALNET_INSTALMENT_INVOICE', 'NOVALNET_INSTALMENT_SEPA']) && $txStatus == 'CONFIRMED') {
-                        $instalmentInfo = $paymentService->getInstalmentInformation($order['id'], $order['amounts'][0]['invoiceTotal']);
+                        $orderAmount = $paymentHelper->convertAmountToSmallerUnit($order['amounts'][0]['invoiceTotal']);
+                        $instalmentInfo = $paymentService->getInstalmentInformation($order['id'], $orderAmount);
                     }
                 }
             }
