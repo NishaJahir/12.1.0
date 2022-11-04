@@ -46,7 +46,7 @@ class TransactionService
             $transaction->saveOneTimeToken    = $transactionData['save_onetime_token'];
             $transaction->tokenInfo           = $transactionData['token_info'];
             $transaction->additionalInfo      = !empty($transactionData['additional_info']) ? $transactionData['additional_info'] : '0';
-	    $transaction->instalmentInfo      = $transactionData['instalment_info'];
+        $transaction->instalmentInfo      = $transactionData['instalment_info'];
             
             $this->getLogger(__METHOD__)->error('save db', $transaction);
             $database->save($transaction);
@@ -77,7 +77,7 @@ class TransactionService
      * @param mixed  $value
      * @param array $transactionData
      *
-     * return none
+     * @return none
      */
     public function updateTransactionData($key, $value, $transactionData)
     {
@@ -96,6 +96,8 @@ class TransactionService
      * Delete payment token from the database table
      *
      * @param array $requestPostData
+     * 
+     * @return none
      */
     public function removeSavedPaymentDetails($requestPostData) 
     {
@@ -107,28 +109,27 @@ class TransactionService
             }
             $database->save($orderDetail);
     }
-	
+    
     /**
      * Update the Instalment cycle TID
      *
-     * @param string $key
-     * @param mixed  $value
-     * @param array $transactionData
+     * @param int $orderNo
+     * @param array  $requestPostData
      *
-     * return none
+     * @return none
      */
     public function updateInstalmentInformation($orderNo, $requestPostData)
     {
         $database = pluginApp(DataBase::class);
         $orderDetails = $database->query(TransactionLog::class)->where('paymentName', 'like', '%novalnet_instalment%')->where('orderNo', '=', $orderNo)->whereNull('instalmentInfo', 'and', true)->limit(1)->get();
-        $orderDetails = json_decode(json_encode($orderDetails[0]), true);	 
-	if(!empty($orderDetails)) {
-            $instalmentInfo = json_decode($orderDetails['instalmentInfo'], true);	
-	    $insCycleCount = $requestPostData['instalment']['cycles_executed'];
-            $instalmentInfo[$insCycleCount]['tid'] = $requestPostData['event']['tid'];
-	    $orderDetails['instalmentInfo'] = json_encode($instalmentInfo); 
-	}
-	$this->getLogger(__METHOD__)->error('updated ins', $orderDetails);
-        $database->save((obj) $orderDetails);
+        $orderDetails = json_decode(json_encode($orderDetails[0]), true);    
+        if(!empty($orderDetails)) {
+                $instalmentInfo = json_decode($orderDetails['instalmentInfo'], true);   
+                $insCycleCount = $requestPostData['instalment']['cycles_executed'];
+                $instalmentInfo[$insCycleCount]['tid'] = $requestPostData['event']['tid'];
+                $orderDetails['instalmentInfo'] = json_encode($instalmentInfo); 
+        }
+        $this->getLogger(__METHOD__)->error('updated ins', $orderDetails);
+        $database->save((object) $orderDetails);
     }
 }
