@@ -1274,7 +1274,7 @@ class PaymentService
     {
 	$dataBase = pluginApp(DataBase::class);
         // Get transaction details from the Novalnet database table
-        $transactionDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%novalnet_instalment%')->where('orderNo', '=', $orderNo)->whereNull('instalmentInfo', 'and', true)->limit(1)->get();
+        $transactionDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%novalnet_instalment%')->where('orderNo', '=', $orderNo)->whereNull('instalmentInfo', '<>', '')->limit(1)->get();
         $transactionDetails = json_decode(json_encode($transactionDetails[0]), true);
 	$this->getLogger(__METHOD__)->error('ins11', $transactionDetails);
         if(!empty($transactionDetails)) {
