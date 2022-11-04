@@ -122,14 +122,14 @@ class TransactionService
     {
         $database = pluginApp(DataBase::class);
         $orderDetails = $database->query(TransactionLog::class)->where('paymentName', 'like', '%novalnet_instalment%')->where('orderNo', '=', $orderNo)->whereNull('instalmentInfo', 'and', true)->limit(1)->get();
-        $orderDetails = json_decode(json_encode($orderDetails[0]), true);    
-        if(!empty($orderDetails)) {
-                $instalmentInfo = json_decode($orderDetails['instalmentInfo'], true);   
+        $instalmentDetails = json_decode(json_encode($orderDetails[0]), true);    
+        if(!empty($instalmentDetails)) {
+                $instalmentInfo = json_decode($instalmentDetails['instalmentInfo'], true);   
                 $insCycleCount = $requestPostData['instalment']['cycles_executed'];
                 $instalmentInfo[$insCycleCount]['tid'] = $requestPostData['event']['tid'];
-                $orderDetails['instalmentInfo'] = json_encode($instalmentInfo); 
+                $orderDetails->instalmentInfo = json_encode($instalmentInfo); 
         }
         $this->getLogger(__METHOD__)->error('updated ins', $orderDetails);
-        $database->save((object) $orderDetails);
+        $database->save($orderDetails);
     }
 }
