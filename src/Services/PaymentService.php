@@ -1274,36 +1274,37 @@ class PaymentService
     {
 	$dataBase = pluginApp(DataBase::class);
         // Get transaction details from the Novalnet database table
-        $transactionDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%novalnet_instalment%')->where('orderNo', '=', $orderNo)->where('instalmentInfo', '<>', NULL)->limit(1)->get();
-        $transactionDetails = json_decode(json_encode($transactionDetails[0]), true);
-	$this->getLogger(__METHOD__)->error('ins11', $transactionDetails);
-        if(!empty($transactionDetails)) {
-            $insAdditionalInfo = json_decode($transactionDetails['instalmentInfo'], true);
-		
-            $this->getLogger(__METHOD__)->error('ins info11', $insAdditionalInfo);
-		
-            $instalmentInfo = [];
-            $totalInstalments = count($insAdditionalInfo['cycle_dates']);
-            $insAdditionalInfo[1]['tid'] = $transactionDetails['tid'];
-            
-            foreach($insAdditionalInfo['cycle_dates'] as $key => $instalmentCycleDate) {
-                $instalmentCycle[$key] = $instalmentCycleDate;
-            }
-            
-            for($instalment=1; $instalment<=$totalInstalments; $instalment++) {
-                if($instalment != $totalInstalments) {
-					$instalmentInfo[$instalment]['cycle_amount'] = number_format($insAdditionalInfo['cycle_amount'] / 100 , 2, ',', '.') .' '. $additionalInfo['currency'];
-                } else {
-                    $cycleAmount = ($transactionDetails['amount'] - ($insAdditionalInfo['cycle_amount'] * ($instalment - 1)));
-                    $instalmentInfo[$instalment]['cycle_amount'] = number_format($cycleAmount / 100 , 2, ',', '.') .' '. $additionalInfo['currency'];
-                }
-                $instalmentInfo[$instalment]['tid'] = !empty($insAdditionalInfo[$instalment]['tid']) ?  $insAdditionalInfo[$instalment]['tid'] : '-';
-                $instalmentInfo[$instalment]['payment_status'] = ($instalmentInfo[$instalment]['tid'] != '-') ? $this->paymentHelper->getTranslatedText('paid') : $this->paymentHelper->getTranslatedText('not_paid');
-                $instalmentInfo[$instalment]['future_instalment_date'] = date_create($instalmentCycle[$instalment]);
-            }
-	    $this->getLogger(__METHOD__)->error('ins full', $instalmentInfo);
-            return $instalmentInfo;
-        }
+        $transactionDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%novalnet_instalment%')->where('orderNo', '=', $orderNo)->get();
+        $this->getLogger(__METHOD__)->error('ins11', $transactionDetails);
+	foreach($transactionDetails as $transactionDetail) {
+	    if(!empty($transactionDetail->instalmentInfo)) {
+		    $insAdditionalInfo = json_decode($transactionDetail['instalmentInfo'], true);
+
+		    $this->getLogger(__METHOD__)->error('ins info11', $insAdditionalInfo);
+
+		    $instalmentInfo = [];
+		    $totalInstalments = count($insAdditionalInfo['cycle_dates']);
+		    $insAdditionalInfo[1]['tid'] = $transactionDetail['tid'];
+
+		    foreach($insAdditionalInfo['cycle_dates'] as $key => $instalmentCycleDate) {
+			$instalmentCycle[$key] = $instalmentCycleDate;
+		    }
+
+		    for($instalment=1; $instalment<=$totalInstalments; $instalment++) {
+			if($instalment != $totalInstalments) {
+						$instalmentInfo[$instalment]['cycle_amount'] = number_format($insAdditionalInfo['cycle_amount'] / 100 , 2, ',', '.') .' '. $additionalInfo['currency'];
+			} else {
+			    $cycleAmount = ($transactionDetails['amount'] - ($insAdditionalInfo['cycle_amount'] * ($instalment - 1)));
+			    $instalmentInfo[$instalment]['cycle_amount'] = number_format($cycleAmount / 100 , 2, ',', '.') .' '. $additionalInfo['currency'];
+			}
+			$instalmentInfo[$instalment]['tid'] = !empty($insAdditionalInfo[$instalment]['tid']) ?  $insAdditionalInfo[$instalment]['tid'] : '-';
+			$instalmentInfo[$instalment]['payment_status'] = ($instalmentInfo[$instalment]['tid'] != '-') ? $this->paymentHelper->getTranslatedText('paid') : $this->paymentHelper->getTranslatedText('not_paid');
+			$instalmentInfo[$instalment]['future_instalment_date'] = date_create($instalmentCycle[$instalment]);
+		    }
+		    $this->getLogger(__METHOD__)->error('ins full', $instalmentInfo);
+		    return $instalmentInfo;   
+	    }
+	}
         return null;
     }
    
