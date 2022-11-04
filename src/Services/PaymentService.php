@@ -1278,7 +1278,7 @@ class PaymentService
         $transactionDetails = json_decode(json_encode($transactionDetails), true);
 	$this->getLogger(__METHOD__)->error('ins11', $transactionDetails);
 	foreach($transactionDetails as $transactionDetailKey => $transactionDetail) {
-	    if(!empty($transactionDetail->instalmentInfo)) {
+	    if(!empty($transactionDetail['instalmentInfo'])) {
 		    $insAdditionalInfo = json_decode($transactionDetail['instalmentInfo'], true);
 
 		    $this->getLogger(__METHOD__)->error('ins info11', $insAdditionalInfo);
