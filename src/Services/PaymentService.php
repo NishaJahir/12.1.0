@@ -590,8 +590,8 @@ class PaymentService
             $this->sessionStorage->getPlugin()->setValue('novalnetCheckoutUrl', $nnPaymentData['transaction']['checkout_js']);
         }
 	// If instalment payment methods set the transaction amount as cycle amount
-	if(in_array($paymentResponseData['payment_method'], ['novalnet_instalment_invoice', 'novalnet_instalment_sepa'])) {
-		$paymentResponseData['transaction']['amount'] = $paymentResponseData['instalment']['cycle_amount'];
+	if(in_array($nnPaymentData['payment_method'], ['novalnet_instalment_invoice', 'novalnet_instalment_sepa'])) {
+		$nnPaymentData['transaction']['amount'] = $nnPaymentData['instalment']['cycle_amount'];
 		
         }
         // Insert payment response into Novalnet table
@@ -1302,7 +1302,7 @@ class PaymentService
 			$instalmentInfo[$instalment]['future_instalment_date'] = date_create($instalmentCycle[$instalment]);
 		    }
 		    $this->getLogger(__METHOD__)->error('ins full', $instalmentInfo);
-		    return $instalmentInfo;   
+		    return (array) $instalmentInfo;   
 	    }
 	}
         return null;
