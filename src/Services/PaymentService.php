@@ -589,6 +589,11 @@ class PaymentService
             $this->sessionStorage->getPlugin()->setValue('novalnetCheckoutToken', $nnPaymentData['transaction']['checkout_token']);
             $this->sessionStorage->getPlugin()->setValue('novalnetCheckoutUrl', $nnPaymentData['transaction']['checkout_js']);
         }
+	// If instalment payment methods set the transaction amount as cycle amount
+	if(in_array($paymentResponseData['payment_method'], ['novalnet_instalment_invoice', 'novalnet_instalment_sepa'])) {
+		$paymentResponseData['transaction']['amount'] = $paymentResponseData['instalment']['cycle_amount'];
+		
+        }
         // Insert payment response into Novalnet table
         $this->insertPaymentResponse($nnPaymentData);
         // Update the Order No to the order if the payment before order completion set as 'No' for direct payments
@@ -597,6 +602,7 @@ class PaymentService
             $nnPaymentData = array_merge($nnPaymentData, $paymentResponseData);
             $this->sessionStorage->getPlugin()->setValue('nnInvoiceRef', $nnPaymentData['transaction']['invoice_ref']);
         }
+	
         // Create a plenty payment to the order
         $this->paymentHelper->createPlentyPayment($nnPaymentData);
     }
@@ -624,7 +630,7 @@ class PaymentService
             $orderTotalAmount = $refundOrderTotalAmount ?? $creditOrderTotalAmount;
         }
         // Save the recent order payment details
-        if (!empty($paymentResponseData['transaction']['payment_data']['token'])) {
+        if(!empty($paymentResponseData['transaction']['payment_data']['token'])) {
             $paymentName = (in_array($paymentResponseData['payment_method'], array('novalnet_sepa', 'novalnet_guaranteed_sepa', 'novalnet_instalment_sepa'))) ? 'sepa' : $paymentResponseData['payment_method'];
             $this->saveRecentOrderPaymentData($paymentName, $paymentResponseData['transaction']['payment_data']);
         }
@@ -639,7 +645,7 @@ class PaymentService
             'save_onetime_token' => !empty($paymentResponseData['transaction']['payment_data']['token']) ? 1 : 0,
             'token_info'         => !empty($paymentResponseData['transaction']['payment_data']) ? json_encode($paymentResponseData['transaction']['payment_data']) : '',
             'additional_info'    => $additionalInfo ?? 0,
-	    'instalment_info'    => !empty($paymentResponseData['instalment']) ? json_encode($paymentResponseData['instalment']) : ''
+	    'instalment_info'    => (!empty($paymentResponseData['instalment']) && $paymentResponseData['transaction']['status'] == 'CONFIRMED') ? json_encode($paymentResponseData['instalment']) : ''
         ];
         if(in_array($transactionData['payment_name'], ['NOVALNET_INVOICE', 'NOVALNET_PREPAYMENT', 'NOVALNET_MULTIBANCO']) ||  (in_array($transactionData['payment_name'], ['NOVALNET_PAYPAL', 'NOALNET_PRZELEWY24']) && in_array($paymentResponseData['transaction']['status'], ['PENDING', 'ON_HOLD'])) || $paymentResponseData['result']['status'] != 'SUCCESS') {
             $transactionData['callback_amount'] = 0;
