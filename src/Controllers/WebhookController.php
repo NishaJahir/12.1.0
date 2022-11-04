@@ -565,7 +565,7 @@ class WebhookController extends Controller
                     $nextSepaInstalmentMsg = $additionalInstalmentMsg;
                 }
             }
-            $instalmentInfo = $this->paymentService->getInstalmentInformation($this->eventData['transaction']['order_no']);
+            $instalmentInfo = $this->paymentService->getInstalmentInformation($this->eventData['transaction']['order_no'], $this->eventData['transaction']['amount']);
             $this->getLogger(__METHOD__)->error('cal ins', $instalmentInfo);
             $webhookComments .= $nextSepaInstalmentMsg;
             // Insert the instalment details into Novalnet DB
