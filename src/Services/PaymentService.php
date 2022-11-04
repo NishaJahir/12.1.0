@@ -1267,10 +1267,11 @@ class PaymentService
      * Retrieve the Instalment information from the database 
      *
      * @param int $orderNo
+     * @param int $orderAmount
      * 
      * @return array|null
      */
-    public function getInstalmentInformation($orderNo)
+    public function getInstalmentInformation($orderNo, $orderAmount)
     {
 	$dataBase = pluginApp(DataBase::class);
         // Get transaction details from the Novalnet database table
@@ -1295,7 +1296,7 @@ class PaymentService
 			if($instalment != $totalInstalments) {
 						$instalmentInfo[$instalment]['cycle_amount'] = number_format($insAdditionalInfo['cycle_amount'] / 100 , 2, ',', '.') .' '. $additionalInfo['currency'];
 			} else {
-			    $cycleAmount = ($transactionDetails['amount'] - ($insAdditionalInfo['cycle_amount'] * ($instalment - 1)));
+			    $cycleAmount = ($orderAmount - ($insAdditionalInfo['cycle_amount'] * ($instalment - 1)));
 			    $instalmentInfo[$instalment]['cycle_amount'] = number_format($cycleAmount / 100 , 2, ',', '.') .' '. $additionalInfo['currency'];
 			}
 			$instalmentInfo[$instalment]['tid'] = !empty($insAdditionalInfo[$instalment]['tid']) ?  $insAdditionalInfo[$instalment]['tid'] : '-';
