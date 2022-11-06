@@ -555,8 +555,6 @@ class WebhookController extends Controller
         if($this->eventData['transaction']['status'] == 'CONFIRMED' && !empty($this->eventData['instalment']['cycles_executed'])) {
             $additionalInstalmentMsg = $nextSepaInstalmentMsg = '';
             $webhookComments = sprintf($this->paymentHelper->getTranslatedText('webhook_instalment_payment_execution', $this->orderLanguage), $this->parentTid, sprintf('%0.2f', ($this->eventData['instalment']['cycle_amount']/100)), $this->eventData['transaction']['currency'], date('d.m.Y'), date('H:i:s'), $this->eventTid);
-            // Updaet the Instalment cycle information
-            $this->transactionService->updateInstalmentInformation($this->eventData['transaction']['order_no'], $this->eventData);
             if(empty($this->eventData['instalment']['prepaid'])) {
                 if($this->eventData['transaction']['payment_type'] == 'INSTALMENT_INVOICE') {
                     $additionalInstalmentMsg = $this->paymentService->getBankDetailsInformation($this->eventData);
@@ -565,11 +563,14 @@ class WebhookController extends Controller
                     $nextSepaInstalmentMsg = $additionalInstalmentMsg;
                 }
             }
-            $instalmentInfo = $this->paymentService->getInstalmentInformation($this->eventData['transaction']['order_no'], $this->eventData['transaction']['amount']);
-            $this->getLogger(__METHOD__)->error('cal ins', $instalmentInfo);
-            $webhookComments .= $nextSepaInstalmentMsg;
             // Insert the instalment details into Novalnet DB
             $this->paymentService->insertPaymentResponse($this->eventData);
+            // Updaet the Instalment cycle information
+            $this->transactionService->updateInstalmentInformation($this->eventData['transaction']['order_no'], $this->eventData);
+            $instalmentInfo = $this->paymentService->getInstalmentInformation($this->eventData['transaction']['order_no'], $this->eventData['transaction']['amount']);
+            $this->getLogger(__METHOD__)->error('cal ins123', $instalmentInfo);
+            $webhookComments .= $nextSepaInstalmentMsg;
+            
             return $this->webhookFinalprocess($webhookComments, $this->eventData);
         }
     }
