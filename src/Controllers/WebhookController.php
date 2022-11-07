@@ -413,6 +413,11 @@ class WebhookController extends Controller
     {
         // If the transaction is captured, we update necessary alterations in DB
         if($this->eventType == 'TRANSACTION_CAPTURE') {
+            $paymentRequestData = [];
+            $paymentRequestData['tid'] = $this->parentTid;
+            
+            $this->eventData = $this->paymentService->getFullTxnResponse($paymentRequestData);
+            $this->getLogger(__METHOD__)->error('updated details', $this->eventData);
             $webhookComments = sprintf($this->paymentHelper->getTranslatedText('webhook_order_confirmation_text', $this->orderLanguage), date('d.m.Y'), date('H:i:s'));
         } else {
         $this->eventData['transaction']['amount'] = 0;
