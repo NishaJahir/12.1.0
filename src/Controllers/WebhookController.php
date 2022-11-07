@@ -413,20 +413,21 @@ class WebhookController extends Controller
     {
         // If the transaction is captured, we update necessary alterations in DB
         if($this->eventType == 'TRANSACTION_CAPTURE') {
-            $paymentRequestData = [];
-            $paymentRequestData['tid'] = $this->parentTid;
-            
-            $this->eventData = $this->paymentService->getFullTxnResponse($paymentRequestData);
-            $this->getLogger(__METHOD__)->error('updated details', $this->eventData);
             $webhookComments = sprintf($this->paymentHelper->getTranslatedText('webhook_order_confirmation_text', $this->orderLanguage), date('d.m.Y'), date('H:i:s'));
         } else {
         $this->eventData['transaction']['amount'] = 0;
         $this->eventData['transaction']['currency'] = $this->orderDetails->currency;
             $webhookComments = sprintf($this->paymentHelper->getTranslatedText('webhook_transaction_cancellation', $this->orderLanguage), date('d.m.Y'), date('H:i:s'));
         }
-        
+        if(in_array($this->eventData['transaction']['payment_type'], ['INVOICE', 'GUARANTEED_INVOICE', 'INSTALMENT_INVOICE'])) {
+            $this->transactionService->updateTransactionData('orderNo', $this->eventData['transaction']['order_no'], $this->eventData);
+            if($this->eventData['transaction']['payment_type'] == 'INSTALMENT_INVOICE') {
+                $this->transactionService->updateInstalmentInformation($this->eventData['transaction']['order_no'], $this->eventData);
+            }
+        } else {
         // Insert the updated transaction details into Novalnet DB
         $this->paymentService->insertPaymentResponse($this->eventData);
+        }
         return $this->webhookFinalprocess($webhookComments, $this->eventData);
     }
 
@@ -571,7 +572,6 @@ class WebhookController extends Controller
             // Updaet the Instalment cycle information
             $this->transactionService->updateInstalmentInformation($this->eventData['transaction']['order_no'], $this->eventData);
             $instalmentInfo = $this->paymentService->getInstalmentInformation($this->eventData['transaction']['order_no'], $this->eventData['transaction']['amount']);
-            $this->getLogger(__METHOD__)->error('cal ins123', $instalmentInfo);
             $webhookComments .= $nextSepaInstalmentMsg;
             
             return $this->webhookFinalprocess($webhookComments, $this->eventData);
