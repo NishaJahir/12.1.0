@@ -589,11 +589,6 @@ class PaymentService
             $this->sessionStorage->getPlugin()->setValue('novalnetCheckoutToken', $nnPaymentData['transaction']['checkout_token']);
             $this->sessionStorage->getPlugin()->setValue('novalnetCheckoutUrl', $nnPaymentData['transaction']['checkout_js']);
         }
-	// If instalment payment methods set the transaction amount as cycle amount
-	if(in_array($nnPaymentData['payment_method'], ['novalnet_instalment_invoice', 'novalnet_instalment_sepa'])) {
-		$nnPaymentData['transaction']['amount'] = $nnPaymentData['instalment']['cycle_amount'];
-		
-        }
         // Insert payment response into Novalnet table
         $this->insertPaymentResponse($nnPaymentData);
         // Update the Order No to the order if the payment before order completion set as 'No' for direct payments
@@ -602,7 +597,11 @@ class PaymentService
             $nnPaymentData = array_merge($nnPaymentData, $paymentResponseData);
             $this->sessionStorage->getPlugin()->setValue('nnInvoiceRef', $nnPaymentData['transaction']['invoice_ref']);
         }
-	
+	// If instalment payment methods set the transaction amount as cycle amount
+	if(in_array($nnPaymentData['payment_method'], ['novalnet_instalment_invoice', 'novalnet_instalment_sepa'])) {
+		$nnPaymentData['transaction']['amount'] = $nnPaymentData['instalment']['cycle_amount'];
+		
+        }
         // Create a plenty payment to the order
         $this->paymentHelper->createPlentyPayment($nnPaymentData);
     }
