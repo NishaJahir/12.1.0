@@ -125,8 +125,12 @@ class TransactionService
         foreach($orderDetails as $orderDetail) {
             $instalmentInfo = json_decode($orderDetail->instalmentInfo, true); 
             $insCycleCount = $requestPostData['instalment']['cycles_executed'];
-            $instalmentInfo[$insCycleCount]['tid'] = $requestPostData['event']['tid'];
-            $orderDetail->instalmentInfo = json_encode($instalmentInfo); 
+            if($insCycleCount == 1) {
+               $orderDetail->instalmentInfo = json_encode($requestPostData['instalment']);  
+            } else {
+                $instalmentInfo[$insCycleCount]['tid'] = $requestPostData['event']['tid'];
+                $orderDetail->instalmentInfo = json_encode($instalmentInfo); 
+            }
         }
         $this->getLogger(__METHOD__)->error('updated ins', $orderDetails);
         $this->getLogger(__METHOD__)->error('updated details', $orderDetail);
