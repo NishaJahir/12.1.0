@@ -1269,7 +1269,7 @@ class PaymentService
      * @param int $orderNo
      * @param int $orderAmount
      * 
-     * @return array|null
+     * @return array
      */
     public function getInstalmentInformation($orderNo, $orderAmount)
     {
@@ -1278,13 +1278,13 @@ class PaymentService
         $transactionDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%novalnet_instalment%')->where('orderNo', '=', $orderNo)->get();
         $transactionDetails = json_decode(json_encode($transactionDetails), true);
 	$this->getLogger(__METHOD__)->error('ins11', $transactionDetails);
+	$instalmentInfo = [];
 	foreach($transactionDetails as $transactionDetailKey => $transactionDetail) {
 	    if(!empty($transactionDetail['instalmentInfo'])) {
 		    $insAdditionalInfo = json_decode($transactionDetail['instalmentInfo'], true);
 
 		    $this->getLogger(__METHOD__)->error('newww', $insAdditionalInfo);
 
-		    $instalmentInfo = [];
 		    $totalInstalments = count($insAdditionalInfo['cycle_dates']);
 		    $insAdditionalInfo[1]['tid'] = $transactionDetail['tid'];
 
@@ -1304,10 +1304,9 @@ class PaymentService
 			$instalmentInfo[$instalment]['future_instalment_date'] = date_create($instalmentCycle[$instalment]);
 		    }
 		    $this->getLogger(__METHOD__)->error('ins full', $instalmentInfo);
-		    return $instalmentInfo;   
 	    }
 	}
-        return null;
+        return $instalmentInfo;
     }
    
     public function logger($k, $v) {
