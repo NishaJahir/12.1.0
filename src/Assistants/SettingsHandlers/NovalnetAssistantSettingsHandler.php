@@ -47,6 +47,7 @@ class NovalnetAssistantSettingsHandler implements WizardSettingsHandler
             $paymentMethodKey = strtolower($paymentMethodKey);
             $novalnetSettings[$paymentMethodKey]['payment_active']               = $data[$paymentKey . 'PaymentActive'] ?? '';
             $novalnetSettings[$paymentMethodKey]['test_mode']                    = $data[$paymentKey . 'TestMode'] ?? '';
+            $novalnetSettings[$paymentMethodKey]['payment_fee']                    = $data[$paymentKey . 'PaymentFee'] ?? '';
             $novalnetSettings[$paymentMethodKey]['payment_logo']                  = $data[$paymentKey . 'PaymentLogo'] ?? '';
             $novalnetSettings[$paymentMethodKey]['minimum_order_amount']         = $data[$paymentKey . 'MinimumOrderAmount'] ?? '';
             $novalnetSettings[$paymentMethodKey]['maximum_order_amount']         = $data[$paymentKey . 'MaximumOrderAmount'] ?? '';
