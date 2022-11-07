@@ -1275,14 +1275,14 @@ class PaymentService
     {
 	$dataBase = pluginApp(DataBase::class);
         // Get transaction details from the Novalnet database table
-        $transactionDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%novalnet_instalment%')->where('orderNo', '=', $orderNo)->limit(1)->get();
-        $transactionDetails = json_decode(json_encode($transactionDetails[0]), true);
+        $transactionDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%novalnet_instalment%')->where('orderNo', '=', $orderNo)->get();
+        $transactionDetails = json_decode(json_encode($transactionDetails), true);
 	$this->getLogger(__METHOD__)->error('ins11', $transactionDetails);
 	foreach($transactionDetails as $transactionDetailKey => $transactionDetail) {
 	    if(!empty($transactionDetail['instalmentInfo'])) {
 		    $insAdditionalInfo = json_decode($transactionDetail['instalmentInfo'], true);
 
-		    $this->getLogger(__METHOD__)->error('ins info11', $insAdditionalInfo);
+		    $this->getLogger(__METHOD__)->error('newww', $insAdditionalInfo);
 
 		    $instalmentInfo = [];
 		    $totalInstalments = count($insAdditionalInfo['cycle_dates']);
