@@ -129,6 +129,7 @@ class TransactionService
             $orderDetail->instalmentInfo = json_encode($instalmentInfo); 
         }
         $this->getLogger(__METHOD__)->error('updated ins', $orderDetails);
+        $this->getLogger(__METHOD__)->error('updated details', $orderDetail);
         $database->save($orderDetail);
     }
 }
