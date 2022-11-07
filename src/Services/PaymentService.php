@@ -1285,7 +1285,7 @@ class PaymentService
 
 		    $this->getLogger(__METHOD__)->error('newww', $insAdditionalInfo);
 
-		    $totalInstalments = count($insAdditionalInfo['cycle_dates']);
+		    $totalInstalments = $insAdditionalInfo['cycles_executed'] + $insAdditionalInfo['pending_cycles'];
 		    $insAdditionalInfo[1]['tid'] = $transactionDetail['tid'];
 
 		    foreach($insAdditionalInfo['cycle_dates'] as $key => $instalmentCycleDate) {
