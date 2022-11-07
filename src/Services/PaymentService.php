@@ -22,6 +22,7 @@ use Plenty\Modules\Helper\Services\WebstoreHelper;
 use Plenty\Modules\Plugin\DataBase\Contracts\DataBase;
 use Plenty\Modules\Plugin\DataBase\Contracts\Query;
 use Plenty\Modules\Payment\Contracts\PaymentRepositoryContract;
+use Plenty\Modules\Frontend\Models\TotalVat;
 use Plenty\Plugin\Log\Loggable;
 
 /**
@@ -197,6 +198,10 @@ class PaymentService
      */
     public function generatePaymentParams(Basket $basket, $paymentKey = '', $orderAmount = 0)
     {
+	$this->getLogger(__METHOD__)->error('Baskettt', $basket);
+	/** @var TotalVat $vat */
+         $vat = pluginApp(\Plenty\Modules\Frontend\Models\TotalVat::class);
+	 $this->getLogger(__METHOD__)->error('Total vat', $vat);
         // Get the customer billing and shipping details
         $billingAddressId = $basket->customerInvoiceAddressId;
         $shippingAddressId = $basket->customerShippingAddressId;
