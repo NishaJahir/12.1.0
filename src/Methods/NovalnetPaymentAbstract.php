@@ -144,7 +144,7 @@ abstract class NovalnetPaymentAbstract extends PaymentMethodBaseService
     public function getFee(): float
     {
         $paymentFee = $this->settingsService->getPaymentSettingsValue('payment_fee', strtolower($this::PAYMENT_KEY));
-        return !empty($paymentFee) ? ($paymentFee / 100) : 0.00;
+        return !empty($paymentFee) ? (number_format(($paymentFee/100), 2)) : 0.00;
     }
 
     /**
