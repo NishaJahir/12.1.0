@@ -1277,14 +1277,11 @@ class PaymentService
         // Get transaction details from the Novalnet database table
         $transactionDetails = $dataBase->query(TransactionLog::class)->where('paymentName', 'like', '%novalnet_instalment%')->where('orderNo', '=', $orderNo)->get();
         $transactionDetails = json_decode(json_encode($transactionDetails), true);
-	$this->getLogger(__METHOD__)->error('ins11', $transactionDetails);
+	$this->getLogger(__METHOD__)->error('new intalment', $transactionDetails);
 	$instalmentInfo = [];
 	foreach($transactionDetails as $transactionDetailKey => $transactionDetail) {
 	    if(!empty($transactionDetail['instalmentInfo'])) {
 		    $insAdditionalInfo = json_decode($transactionDetail['instalmentInfo'], true);
-
-		    $this->getLogger(__METHOD__)->error('newww', $insAdditionalInfo);
-
 		    $totalInstalments = $insAdditionalInfo['cycles_executed'] + $insAdditionalInfo['pending_cycles'];
 		    $insAdditionalInfo[1]['tid'] = $transactionDetail['tid'];
 
@@ -1303,9 +1300,10 @@ class PaymentService
 			$instalmentInfo[$instalment]['payment_status'] = ($instalmentInfo[$instalment]['tid'] != '-') ? $this->paymentHelper->getTranslatedText('paid') : $this->paymentHelper->getTranslatedText('not_paid');
 			$instalmentInfo[$instalment]['future_instalment_date'] = date_create($instalmentCycle[$instalment]);
 		    }
-		    $this->getLogger(__METHOD__)->error('ins full', $instalmentInfo);
+		    
 	    }
 	}
+	$this->getLogger(__METHOD__)->error('Final response', $instalmentInfo);
         return $instalmentInfo;
     }
    
