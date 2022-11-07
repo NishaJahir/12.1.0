@@ -287,6 +287,14 @@ class NovalnetAssistant extends WizardProvider
                                                 'name' => 'NovalnetAssistant.novalnetTestModeLabel'
                                                ]
                             ],
+                            $paymentMethodKey . 'PaymentFee' =>
+                            [
+                                'type'      => 'text',
+                                'options'   => [
+                                              'name'    => 'NovalnetAssistant.novalnetPaymentFeeLabel',
+                                              'pattern' => '^[1-9]\d*$'
+                                             ]
+                            ],
                            $paymentMethodKey . 'PaymentLogo' =>
                            [
                                 'type'      => 'file',
