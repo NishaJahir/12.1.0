@@ -24,6 +24,8 @@ use Plenty\Modules\Plugin\DataBase\Contracts\Query;
 use Plenty\Modules\Payment\Contracts\PaymentRepositoryContract;
 use Plenty\Modules\Frontend\Models\TotalVat;
 use Plenty\Modules\Basket\Contracts\BasketItemRepositoryContract;
+use Plenty\Modules\Basket\Events\BasketItem\AfterBasketItemAdd;
+use Plenty\Modules\Basket\Models\BasketItem
 use Plenty\Modules\Order\Models\OrderAmount;
 
 
@@ -208,8 +210,13 @@ class PaymentService
     {
 	$this->getLogger(__METHOD__)->error('Baskettt', $basket);
 	$this->getLogger(__METHOD__)->error('Baskettt item', $this->basketItemRepository->all());
+	    
+		    $item = pluginApp(\Plenty\Modules\Basket\Events\BasketItem\AfterBasketItemAdd::class);
+	            $itemdetails = $item->getBasketItem();
+	            $this->getLogger(__METHOD__)->error('item', $itemdetails);
 	/** @var TotalVat $vat */
          $vat = pluginApp(\Plenty\Modules\Frontend\Models\TotalVat::class);
+	    
 	 $this->getLogger(__METHOD__)->error('Total vat', $vat['vatAmount']);
 	    $this->getLogger(__METHOD__)->error('Total vat oj', $vat->vatAmount);
 	    $total = pluginApp(\Plenty\Modules\Order\Models\OrderAmount::class);
