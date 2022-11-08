@@ -28,6 +28,7 @@ use Plenty\Modules\Basket\Events\BasketItem\AfterBasketItemAdd;
 use Plenty\Modules\Basket\Models\BasketItem;
 use Plenty\Modules\Order\Models\OrderAmount;
 use Plenty\Modules\Item\Item\Contracts\ItemRepositoryContract;
+use Plenty\Modules\Category\Models\Category;
 use IO\Services\CategoryService;
 
 use Plenty\Plugin\Log\Loggable;
@@ -225,7 +226,7 @@ class PaymentService
 	 $categoryService    = pluginApp(\IO\Services\CategoryService::class);   
 	  $currentItem 	    = $categoryService->getCurrentItem();
 	  $this->getLogger(__METHOD__)->error('currentItem', $currentItem);
-	  $category = $categoryService->currentCategory();
+	  $category = $categoryService->getCurrentCategory();
 	  $this->getLogger(__METHOD__)->error('category', $category);  
         // Get the customer billing and shipping details
         $billingAddressId = $basket->customerInvoiceAddressId;
