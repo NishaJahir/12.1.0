@@ -27,6 +27,7 @@ use Plenty\Modules\Basket\Contracts\BasketItemRepositoryContract;
 use Plenty\Modules\Basket\Events\BasketItem\AfterBasketItemAdd;
 use Plenty\Modules\Basket\Models\BasketItem;
 use Plenty\Modules\Order\Models\OrderAmount;
+use Plenty\Modules\Item\Item\Contracts\ItemRepositoryContract;
 
 
 use Plenty\Plugin\Log\Loggable;
@@ -209,20 +210,15 @@ class PaymentService
     public function generatePaymentParams(Basket $basket, $paymentKey = '', $orderAmount = 0)
     {
 	$this->getLogger(__METHOD__)->error('Baskettt', $basket);
+	    $otems = $this->basketItemRepository->all();
 	$this->getLogger(__METHOD__)->error('Baskettt item', $this->basketItemRepository->all());
+	$itemContract  = pluginApp(\Plenty\Modules\Item\Item\Contracts\ItemRepositoryContract::class);
+	foreach($otems as $otem) {
+		$this->getLogger(__METHOD__)->error('de123', $otem);
+	}
+	$deta = $itemContract->show(163);
+	   $this->getLogger(__METHOD__)->error('de', $deta);
 	    
-		    $item = pluginApp(\Plenty\Modules\Basket\Events\BasketItem\AfterBasketItemAdd::class);
-	            $itemdetails = $item->getBasketItem();
-	            $this->getLogger(__METHOD__)->error('item', $itemdetails);
-	/** @var TotalVat $vat */
-         $vat = pluginApp(\Plenty\Modules\Frontend\Models\TotalVat::class);
-	    
-	 $this->getLogger(__METHOD__)->error('Total vat', $vat['vatAmount']);
-	    $this->getLogger(__METHOD__)->error('Total vat oj', $vat->vatAmount);
-	    $total = pluginApp(\Plenty\Modules\Order\Models\OrderAmount::class);
-	    $this->getLogger(__METHOD__)->error('vat arr', $total['vatTotal']);
-	    $this->getLogger(__METHOD__)->error('vat obj', $total->vatTotal);
-	    $this->getLogger(__METHOD__)->error('vat whole', $total);
         // Get the customer billing and shipping details
         $billingAddressId = $basket->customerInvoiceAddressId;
         $shippingAddressId = $basket->customerShippingAddressId;
