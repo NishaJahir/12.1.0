@@ -23,6 +23,10 @@ use Plenty\Modules\Plugin\DataBase\Contracts\DataBase;
 use Plenty\Modules\Plugin\DataBase\Contracts\Query;
 use Plenty\Modules\Payment\Contracts\PaymentRepositoryContract;
 use Plenty\Modules\Frontend\Models\TotalVat;
+use Plenty\Modules\Basket\Contracts\BasketItemRepositoryContract;
+use Plenty\Modules\Order\Models\OrderAmount;
+
+
 use Plenty\Plugin\Log\Loggable;
 
 /**
@@ -73,6 +77,8 @@ class PaymentService
      * @var PaymentRepositoryContract
      */
     private $paymentRepository;
+    
+	private $basketItemRepository;
 
     /**
      * @var redirectPayment
@@ -98,7 +104,8 @@ class PaymentService
                                 CountryRepositoryContract $countryRepository,
                                 FrontendSessionStorageFactoryContract $sessionStorage,
                                 TransactionService $transactionService,
-                                PaymentRepositoryContract $paymentRepository
+                                PaymentRepositoryContract $paymentRepository,
+				BasketItemRepositoryContract $basketItemRepository
                                )
     {
         $this->settingsService      = $settingsService;
@@ -109,6 +116,7 @@ class PaymentService
         $this->sessionStorage       = $sessionStorage;
         $this->transactionService   = $transactionService;
         $this->paymentRepository    = $paymentRepository;
+	$this->basketItemRepository = $basketItemRepository;
     }
 
     /**
@@ -199,9 +207,15 @@ class PaymentService
     public function generatePaymentParams(Basket $basket, $paymentKey = '', $orderAmount = 0)
     {
 	$this->getLogger(__METHOD__)->error('Baskettt', $basket);
+	$this->getLogger(__METHOD__)->error('Baskettt item', $this->basketItemRepository->all());
 	/** @var TotalVat $vat */
          $vat = pluginApp(\Plenty\Modules\Frontend\Models\TotalVat::class);
-	 $this->getLogger(__METHOD__)->error('Total vat', $vat);
+	 $this->getLogger(__METHOD__)->error('Total vat', $vat['vatAmount']);
+	    $this->getLogger(__METHOD__)->error('Total vat oj', $vat->vatAmount);
+	    $total = pluginApp(\Plenty\Modules\Order\Models\OrderAmount::class);
+	    $this->getLogger(__METHOD__)->error('vat arr', $total['vatTotal']);
+	    $this->getLogger(__METHOD__)->error('vat obj', $total->vatTotal);
+	    $this->getLogger(__METHOD__)->error('vat whole', $total);
         // Get the customer billing and shipping details
         $billingAddressId = $basket->customerInvoiceAddressId;
         $shippingAddressId = $basket->customerShippingAddressId;
