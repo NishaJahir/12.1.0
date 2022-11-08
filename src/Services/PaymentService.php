@@ -224,9 +224,9 @@ class PaymentService
 		}
 	}
 	
-	 $categoryService    = pluginApp(\IO\Services\CategoryService::class);   
+	 $categoryService    = pluginApp(CategoryService::class);   
 	  $currentItem 	    = $categoryService->getCurrentItem();
-	  $this->getLogger(__METHOD__)->error('currentItem', $currentItem);
+	  $this->getLogger(__METHOD__)->error('currentItem123', $currentItem);
 	  $category = $categoryService->getCurrentCategory();
 	  $this->getLogger(__METHOD__)->error('category', $category);  
 	    
