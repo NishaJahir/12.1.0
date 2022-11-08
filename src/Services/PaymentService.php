@@ -28,7 +28,7 @@ use Plenty\Modules\Basket\Events\BasketItem\AfterBasketItemAdd;
 use Plenty\Modules\Basket\Models\BasketItem;
 use Plenty\Modules\Order\Models\OrderAmount;
 use Plenty\Modules\Item\Item\Contracts\ItemRepositoryContract;
-
+use IO\Services\CategoryService;
 
 use Plenty\Plugin\Log\Loggable;
 
@@ -215,10 +215,18 @@ class PaymentService
 	$itemContract  = pluginApp(\Plenty\Modules\Item\Item\Contracts\ItemRepositoryContract::class);
 	foreach($otems as $otem) {
 		$this->getLogger(__METHOD__)->error('de123', $otem);
-	}
-	$deta = $itemContract->show(163);
+		$deta = $itemContract->show($otem->itemId);
 	   $this->getLogger(__METHOD__)->error('de', $deta);
-	    
+		foreach($deta['texts'] as $itemtext) {
+		   $this->getLogger(__METHOD__)->error('name', $itemtext->name1);
+		}
+	}
+	
+	 $categoryService    = pluginApp(\IO\Services\CategoryService::class);   
+	  $currentItem 	    = $categoryService->getCurrentItem();
+	  $this->getLogger(__METHOD__)->error('currentItem', $currentItem);
+	  $category = $categoryService->currentCategory();
+	  $this->getLogger(__METHOD__)->error('category', $category);  
         // Get the customer billing and shipping details
         $billingAddressId = $basket->customerInvoiceAddressId;
         $shippingAddressId = $basket->customerShippingAddressId;
