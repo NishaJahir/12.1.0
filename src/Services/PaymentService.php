@@ -25,7 +25,7 @@ use Plenty\Modules\Payment\Contracts\PaymentRepositoryContract;
 use Plenty\Modules\Frontend\Models\TotalVat;
 use Plenty\Modules\Basket\Contracts\BasketItemRepositoryContract;
 use Plenty\Modules\Basket\Events\BasketItem\AfterBasketItemAdd;
-use Plenty\Modules\Basket\Models\BasketItem
+use Plenty\Modules\Basket\Models\BasketItem;
 use Plenty\Modules\Order\Models\OrderAmount;
 
 
